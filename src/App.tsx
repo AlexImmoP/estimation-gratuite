@@ -19,7 +19,7 @@ type FormState = {
 };
 
 const SCRIPT_URL =
-  "https://script.google.com/macros/s/AKfycbztjZoWZFXlkzzX_BvNRNq0izXCf1gk5FmQiOt7p_Z3DC_Y03IWaR0Ya_iRjWSAWgHD/exec";
+  "https://script.google.com/macros/s/AKfycbx2jie5IQkp4FX4s8dWfTnLIBQlIdCmRwEoILvPzazyTY_yOegpkR5BUci1KY9Y4cHY/exec";
 
 const STEPS: Array<{ num: Step; label: string }> = [
   { num: 1, label: "Votre bien" },
