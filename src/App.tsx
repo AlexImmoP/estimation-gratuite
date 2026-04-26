@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 type Step = 1 | 2 | 3 | 4;
 
@@ -50,6 +50,7 @@ export default function RealEstateLeadPage() {
   const [submitted, setSubmitted] = useState(false);
   const [submitError, setSubmitError] = useState("");
   const [form, setForm] = useState<FormState>(INITIAL_FORM);
+  const iframeRef = useRef<HTMLIFrameElement | null>(null);
 
   const setField = (key: keyof FormState, value: string) => {
     setForm((prev) => ({ ...prev, [key]: value }));
@@ -72,24 +73,20 @@ export default function RealEstateLeadPage() {
     setStep((prev) => Math.max(prev - 1, 1) as Step);
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = () => {
     if (!canNext() || isSubmitting) return;
     setIsSubmitting(true);
     setSubmitError("");
-    try {
-      const data = new FormData();
-      Object.entries(form).forEach(([key, value]) => data.append(key, value));
-      await fetch(SCRIPT_URL, { method: "POST", body: data });
-      setSubmitted(true);
-    } catch {
-      setSubmitError("Une erreur est survenue lors de l'envoi. Veuillez réessayer.");
-    } finally {
-      setIsSubmitting(false);
-    }
+  };
+
+  const handleIframeLoad = () => {
+    if (!isSubmitting) return;
+    setIsSubmitting(false);
+    setSubmitted(true);
   };
 
   return (
-    <div style={{ fontFamily: "'DM Sans', sans-serif", background: "#FAFAF8", minHeight: "100vh", color: "#1a1a18" }}>
+    <div style={{ fontFamily: "'DM Sans', sans-serif", background: "#FAFAF8", minHeight: "100vh", color: "#1a1a18", paddingBottom: 96 }}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap');
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -122,59 +119,80 @@ export default function RealEstateLeadPage() {
         input::placeholder, textarea::placeholder { color: #B4B2A9; }
         .field { margin-bottom: 14px; }
         .field label {
-          display: block; font-size: 12px; font-weight: 500;
-          color: #888780; margin-bottom: 6px;
-          letter-spacing: 0.03em; text-transform: uppercase;
+          display: block;
+          font-size: 12px;
+          font-weight: 500;
+          color: #888780;
+          margin-bottom: 6px;
+          letter-spacing: 0.03em;
+          text-transform: uppercase;
         }
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 
         .btn-primary {
-          width: 100%; padding: 15px 24px;
-          background: #1a1a18; color: #fff; border: none;
-          border-radius: 12px; font-family: 'DM Sans', sans-serif;
-          font-size: 15px; font-weight: 500; cursor: pointer;
+          width: 100%;
+          padding: 15px 24px;
+          background: #1a1a18;
+          color: #fff;
+          border: none;
+          border-radius: 12px;
+          font-family: 'DM Sans', sans-serif;
+          font-size: 15px;
+          font-weight: 500;
+          cursor: pointer;
           transition: background 0.2s, transform 0.15s, opacity 0.2s;
         }
         .btn-primary:hover:not(:disabled) { background: #333330; transform: translateY(-1px); }
         .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
 
         .btn-back {
-          background: none; border: 1.5px solid #D6D4CE;
-          border-radius: 12px; padding: 13px 20px;
-          font-family: 'DM Sans', sans-serif; font-size: 14px;
-          color: #888780; cursor: pointer;
+          background: none;
+          border: 1.5px solid #D6D4CE;
+          border-radius: 12px;
+          padding: 13px 20px;
+          font-family: 'DM Sans', sans-serif;
+          font-size: 14px;
+          color: #888780;
+          cursor: pointer;
           transition: border-color 0.2s, color 0.2s;
         }
         .btn-back:hover { border-color: #1a1a18; color: #1a1a18; }
 
         .option-btn {
-          padding: 13px 16px; border: 1.5px solid #D6D4CE;
-          border-radius: 12px; background: #fff;
-          font-family: 'DM Sans', sans-serif; font-size: 14px;
-          color: #1a1a18; cursor: pointer; transition: all 0.15s;
-          text-align: left; width: 100%;
+          padding: 13px 16px;
+          border: 1.5px solid #D6D4CE;
+          border-radius: 12px;
+          background: #fff;
+          font-family: 'DM Sans', sans-serif;
+          font-size: 14px;
+          color: #1a1a18;
+          cursor: pointer;
+          transition: all 0.15s;
+          text-align: left;
+          width: 100%;
         }
         .option-btn:hover { border-color: #8B6A3E; background: #FAF6F1; }
         .option-btn.selected { border-color: #8B6A3E; background: #FAF6F1; color: #8B6A3E; font-weight: 500; }
 
         .badge {
-          display: inline-flex; align-items: center;
-          padding: 5px 12px; border-radius: 100px;
-          font-size: 13px; font-weight: 500;
+          display: inline-flex;
+          align-items: center;
+          padding: 5px 12px;
+          border-radius: 100px;
+          font-size: 13px;
+          font-weight: 500;
         }
         .badge-green { background: #EAF3DE; color: #3B6D11; }
         .badge-amber { background: #FAEEDA; color: #854F0B; }
         .badge-blue  { background: #E6F1FB; color: #185FA5; }
 
         .card { background: #fff; border: 1px solid #E8E6E0; border-radius: 18px; padding: 20px; }
-
         .step-fade { animation: stepIn 0.25s ease both; }
         @keyframes stepIn {
           from { opacity: 0; transform: translateX(16px); }
           to   { opacity: 1; transform: translateX(0); }
         }
 
-        /* ── CTA MOBILE FIXE ── */
         .mobile-cta {
           display: none;
           position: fixed;
@@ -193,54 +211,60 @@ export default function RealEstateLeadPage() {
         }
 
         @media (max-width: 900px) {
-          .hero-layout  { grid-template-columns: 1fr !important; }
-          .why-layout   { grid-template-columns: 1fr !important; }
+          .hero-layout  { grid-template-columns: 1fr !important; gap: 32px !important; }
+          .why-layout   { grid-template-columns: 1fr !important; gap: 28px !important; }
           .grid-2       { grid-template-columns: 1fr !important; }
           .mini-cards   { grid-template-columns: 1fr !important; }
           .cta-layout   { grid-template-columns: 1fr !important; }
           .span-2       { grid-column: span 1 !important; }
           .opts-4       { grid-template-columns: 1fr 1fr !important; }
           .mobile-cta   { display: block; }
-          body          { padding-bottom: 80px; }
+          .nav-wrap     { padding: 12px 16px !important; gap: 12px; }
+          .nav-brand    { font-size: 16px !important; }
+          .nav-button   { padding: 8px 12px !important; font-size: 12px !important; }
+          .hero-section { overflow: hidden !important; }
+          .hero-image   { display: none !important; }
+          .hero-pad     { padding: 40px 16px !important; }
+          .form-sticky  { position: static !important; top: auto !important; }
+          .form-card    { padding: 24px 18px !important; border-radius: 18px !important; }
+          .section-pad  { padding: 56px 16px !important; }
+          .cta-box      { padding: 36px 20px !important; }
+          .step-card    { flex-direction: column !important; align-items: flex-start !important; }
+          .step-link    { margin-left: 0 !important; width: 100%; justify-content: center; }
         }
       `}</style>
 
-      {/* ── NAVBAR STICKY ── */}
-      <nav style={{
+      <nav className="nav-wrap" style={{
         position: "sticky", top: 0, zIndex: 999,
         background: "#fff", borderBottom: "1px solid #E8E6E0",
         padding: "14px 32px",
         display: "flex", alignItems: "center", justifyContent: "space-between",
-        boxShadow: "0 2px 16px rgba(0,0,0,0.06)",
+        boxShadow: "0 2px 16px rgba(0,0,0,0.06)", gap: 20,
       }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#8B6A3E" }} />
-          <span className="serif" style={{ fontSize: 18, fontWeight: 700 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 10, minWidth: 0 }}>
+          <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#8B6A3E", flexShrink: 0 }} />
+          <span className="serif nav-brand" style={{ fontSize: 18, fontWeight: 700, whiteSpace: "nowrap" }}>
             EstimationGratuite<span style={{ color: "#8B6A3E" }}>.be</span>
           </span>
         </div>
-        <a href="#formulaire" style={{
+        <a className="nav-button" href="#formulaire" style={{
           padding: "9px 20px", background: "#1a1a18", color: "#fff",
-          borderRadius: 8, fontSize: 14, fontWeight: 500, textDecoration: "none",
+          borderRadius: 8, fontSize: 14, fontWeight: 500, textDecoration: "none", whiteSpace: "nowrap",
         }}>
           Estimer mon bien gratuitement
         </a>
       </nav>
 
-      {/* ── HERO ── */}
-      <section style={{ background: "linear-gradient(135deg, #F7F5F0 0%, #fff 60%, #F7F5F0 100%)", borderBottom: "1px solid #E8E6E0", position: "relative", overflow: "hidden" }}>
-        {/* Image décorative hero */}
-        <div style={{
+      <section className="hero-section" style={{ background: "linear-gradient(135deg, #F7F5F0 0%, #fff 60%, #F7F5F0 100%)", borderBottom: "1px solid #E8E6E0", position: "relative", overflow: "hidden" }}>
+        <div className="hero-image" style={{
           position: "absolute", top: 0, right: 0,
           width: "38%", height: "100%",
           backgroundImage: "url('https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=900&auto=format&fit=crop&q=80')",
           backgroundSize: "cover", backgroundPosition: "center",
           opacity: 0.12, pointerEvents: "none",
         }} />
-        <div style={{ maxWidth: 1200, margin: "0 auto", padding: "64px 32px" }}>
+        <div className="hero-pad" style={{ maxWidth: 1200, margin: "0 auto", padding: "64px 32px" }}>
           <div className="hero-layout" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 64, alignItems: "start" }}>
-
-            {/* LEFT */}
             <div>
               <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 24 }}>
                 <span className="badge badge-green">Estimation gratuite</span>
@@ -261,7 +285,7 @@ export default function RealEstateLeadPage() {
                 }}>
                   Obtenir mon estimation gratuite
                 </a>
-                <div style={{ marginTop: 12, display: "flex", alignItems: "center", gap: 8 }}>
+                <div style={{ marginTop: 12, display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
                   <div style={{ display: "flex" }}>
                     {["#C4A882", "#A8896A", "#8B6A3E"].map((bg, i) => (
                       <div key={i} style={{
@@ -290,15 +314,15 @@ export default function RealEstateLeadPage() {
               </div>
             </div>
 
-            {/* ── FORMULAIRE MULTI-STEP ── */}
-            <div id="formulaire" style={{ position: "sticky", top: 80 }}>
-              <div style={{
+            <div id="formulaire" className="form-sticky" style={{ position: "sticky", top: 80 }}>
+              <div className="form-card" style={{
                 background: "#fff", border: "1px solid #E8E6E0",
                 borderRadius: 24, padding: "32px 28px",
                 boxShadow: "0 8px 48px rgba(0,0,0,0.08)",
               }}>
+                <iframe ref={iframeRef} name="hidden_iframe" title="hidden_iframe" style={{ display: "none" }} onLoad={handleIframeLoad} />
+
                 {submitted ? (
-                  /* ── CONFIRMATION ── */
                   <div style={{ textAlign: "center", padding: "24px 0" }}>
                     <div style={{
                       width: 56, height: 56, borderRadius: "50%",
@@ -310,15 +334,28 @@ export default function RealEstateLeadPage() {
                       Demande envoyée !
                     </h2>
                     <p style={{ fontSize: 14, color: "#5F5E5A", lineHeight: 1.75 }}>
-                      Un professionnel de votre secteur vous contactera sous 48h pour organiser la visite d'estimation, gratuitement et sans engagement.
+                      Un professionnel de votre secteur vous contactera sous 48h pour organiser la visite d&apos;estimation, gratuitement et sans engagement.
                     </p>
                     <div style={{ marginTop: 24, padding: "14px 16px", background: "#F7F5F0", borderRadius: 12, fontSize: 13, color: "#888780" }}>
                       Réponse sous 48h · Aucun engagement · Professionnel de votre secteur
                     </div>
                   </div>
                 ) : (
-                  <>
-                    {/* ── PROGRESS ── */}
+                  <form action={SCRIPT_URL} method="POST" target="hidden_iframe" onSubmit={handleSubmit}>
+                    <input type="hidden" name="typeBien" value={form.typeBien} readOnly />
+                    <input type="hidden" name="chambres" value={form.chambres} readOnly />
+                    <input type="hidden" name="surface" value={form.surface} readOnly />
+                    <input type="hidden" name="etat" value={form.etat} readOnly />
+                    <input type="hidden" name="rue" value={form.rue} readOnly />
+                    <input type="hidden" name="numero" value={form.numero} readOnly />
+                    <input type="hidden" name="codePostal" value={form.codePostal} readOnly />
+                    <input type="hidden" name="ville" value={form.ville} readOnly />
+                    <input type="hidden" name="delai" value={form.delai} readOnly />
+                    <input type="hidden" name="message" value={form.message} readOnly />
+                    <input type="hidden" name="nom" value={form.nom} readOnly />
+                    <input type="hidden" name="telephone" value={form.telephone} readOnly />
+                    <input type="hidden" name="email" value={form.email} readOnly />
+
                     <div style={{ marginBottom: 28 }}>
                       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
                         <span style={{ fontSize: 12, fontWeight: 500, color: "#888780", textTransform: "uppercase", letterSpacing: "0.08em" }}>
@@ -339,7 +376,6 @@ export default function RealEstateLeadPage() {
                       </div>
                     </div>
 
-                    {/* ── ÉTAPE 1 : VOTRE BIEN ── */}
                     {step === 1 && (
                       <div className="step-fade">
                         <h2 className="serif" style={{ fontSize: 20, fontWeight: 700, marginBottom: 6 }}>Votre bien</h2>
@@ -361,12 +397,12 @@ export default function RealEstateLeadPage() {
                         </div>
                         <div className="field" style={{ marginTop: 16 }}>
                           <label>Nombre de chambres</label>
-                          <div style={{ display: "flex", gap: 8 }}>
+                          <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                             {["0", "1", "2", "3", "4", "5+"].map((count) => (
                               <button key={count} type="button"
                                 className={`option-btn${form.chambres === count ? " selected" : ""}`}
                                 onClick={() => setField("chambres", count)}
-                                style={{ textAlign: "center", flex: 1, padding: "11px 6px", fontSize: 14, fontWeight: 500 }}>
+                                style={{ textAlign: "center", flex: 1, minWidth: 46, padding: "11px 6px", fontSize: 14, fontWeight: 500 }}>
                                 {count}
                               </button>
                             ))}
@@ -392,12 +428,11 @@ export default function RealEstateLeadPage() {
                       </div>
                     )}
 
-                    {/* ── ÉTAPE 2 : LOCALISATION ── */}
                     {step === 2 && (
                       <div className="step-fade">
                         <h2 className="serif" style={{ fontSize: 20, fontWeight: 700, marginBottom: 6 }}>Localisation du bien</h2>
                         <p style={{ fontSize: 13, color: "#888780", marginBottom: 24, lineHeight: 1.6 }}>
-                          L'adresse exacte permet au professionnel de préparer son analyse du marché local.
+                          L&apos;adresse exacte permet au professionnel de préparer son analyse du marché local.
                         </p>
                         <div className="grid-2">
                           <div className="field">
@@ -426,7 +461,6 @@ export default function RealEstateLeadPage() {
                       </div>
                     )}
 
-                    {/* ── ÉTAPE 3 : PROJET ── */}
                     {step === 3 && (
                       <div className="step-fade">
                         <h2 className="serif" style={{ fontSize: 20, fontWeight: 700, marginBottom: 6 }}>Votre projet</h2>
@@ -447,8 +481,7 @@ export default function RealEstateLeadPage() {
                         </div>
                         <div className="field" style={{ marginTop: 16 }}>
                           <label>
-                            Précisions supplémentaires{" "}
-                            <span style={{ fontWeight: 400, color: "#B4B2A9" }}>(facultatif)</span>
+                            Précisions supplémentaires <span style={{ fontWeight: 400, color: "#B4B2A9" }}>(facultatif)</span>
                           </label>
                           <textarea rows={3}
                             placeholder="Jardin, garage, rénovations récentes..."
@@ -459,12 +492,11 @@ export default function RealEstateLeadPage() {
                       </div>
                     )}
 
-                    {/* ── ÉTAPE 4 : COORDONNÉES ── */}
                     {step === 4 && (
                       <div className="step-fade">
                         <h2 className="serif" style={{ fontSize: 20, fontWeight: 700, marginBottom: 6 }}>Vos coordonnées</h2>
                         <p style={{ fontSize: 13, color: "#888780", marginBottom: 24, lineHeight: 1.6 }}>
-                          Pour que le professionnel puisse vous contacter et fixer le rendez-vous d'estimation.
+                          Pour que le professionnel puisse vous contacter et fixer le rendez-vous d&apos;estimation.
                         </p>
                         <div className="field">
                           <label>Prénom et nom</label>
@@ -481,7 +513,6 @@ export default function RealEstateLeadPage() {
                           <input type="email" placeholder="jean@exemple.be"
                             value={form.email} onChange={(e) => setField("email", e.target.value)} />
                         </div>
-                        {/* Réassurance avant le bouton final */}
                         <div style={{
                           display: "flex", justifyContent: "center", gap: 20,
                           padding: "12px 0", marginBottom: 16,
@@ -497,19 +528,18 @@ export default function RealEstateLeadPage() {
                       </div>
                     )}
 
-                    {/* ── NAVIGATION ── */}
                     <div style={{ display: "flex", gap: 10, marginTop: 8 }}>
                       {step > 1 && (
-                        <button className="btn-back" onClick={goBack} style={{ flex: "0 0 auto" }}>
+                        <button type="button" className="btn-back" onClick={goBack} style={{ flex: "0 0 auto" }}>
                           ← Retour
                         </button>
                       )}
                       {step < 4 ? (
-                        <button className="btn-primary" disabled={!canNext()} onClick={goNext}>
+                        <button type="button" className="btn-primary" disabled={!canNext()} onClick={goNext}>
                           Continuer →
                         </button>
                       ) : (
-                        <button className="btn-primary" disabled={!canNext() || isSubmitting} onClick={handleSubmit}>
+                        <button type="submit" className="btn-primary" disabled={!canNext() || isSubmitting}>
                           {isSubmitting ? "Envoi en cours..." : "Demander mon estimation →"}
                         </button>
                       )}
@@ -522,56 +552,53 @@ export default function RealEstateLeadPage() {
                     )}
 
                     <p style={{ marginTop: 14, fontSize: 11, color: "#B4B2A9", lineHeight: 1.6, textAlign: "center" }}>
-                      En cliquant sur « Demander mon estimation », vous acceptez la politique de confidentialité de EstimationGratuite.be et le traitement de vos données afin d'être recontacté dans le cadre de votre demande d'estimation.
+                      En cliquant sur « Demander mon estimation », vous acceptez la politique de confidentialité de EstimationGratuite.be et le traitement de vos données afin d&apos;être recontacté dans le cadre de votre demande d&apos;estimation.
                     </p>
-                  </>
+                  </form>
                 )}
               </div>
             </div>
-
           </div>
         </div>
       </section>
 
-      {/* ── POURQUOI UN PROFESSIONNEL ── */}
-      <section style={{ maxWidth: 1200, margin: "0 auto", padding: "80px 32px" }}>
+      <section className="section-pad" style={{ maxWidth: 1200, margin: "0 auto", padding: "80px 32px" }}>
         <div className="why-layout" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 64 }}>
           <div>
             <p style={{ fontSize: 12, fontWeight: 500, textTransform: "uppercase", letterSpacing: "0.12em", color: "#888780", marginBottom: 14 }}>
               Pourquoi choisir un professionnel pour estimer votre bien ?
             </p>
             <h2 className="serif" style={{ fontSize: "clamp(26px, 3vw, 38px)", fontWeight: 700, lineHeight: 1.2, marginBottom: 20 }}>
-              Rien ne remplace le regard d'un professionnel sur votre bien
+              Rien ne remplace le regard d&apos;un professionnel sur votre bien
             </h2>
             <p style={{ fontSize: 16, lineHeight: 1.8, color: "#5F5E5A", fontWeight: 300 }}>
-              Un simple outil en ligne ne perçoit pas tout ce qui fait la valeur réelle d'un bien. La luminosité, l'agencement, l'état d'entretien, les finitions et l'environnement immédiat influencent directement son estimation. Le regard d'un professionnel permet d'apprécier ces éléments avec précision, en tenant compte de tous les atouts de votre bien, afin d'aboutir à une estimation juste.
+              Un simple outil en ligne ne perçoit pas tout ce qui fait la valeur réelle d&apos;un bien. La luminosité, l&apos;agencement, l&apos;état d&apos;entretien, les finitions et l&apos;environnement immédiat influencent directement son estimation. Le regard d&apos;un professionnel permet d&apos;apprécier ces éléments avec précision, en tenant compte de tous les atouts de votre bien, afin d&apos;aboutir à une estimation juste.
             </p>
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
             <div className="card">
               <h3 style={{ fontSize: 14, fontWeight: 500, marginBottom: 10 }}>Une vision plus juste du marché</h3>
               <p style={{ fontSize: 13, color: "#888780", lineHeight: 1.7 }}>
-                Le marché immobilier ne se résume pas à des données générales. Un professionnel actif sur le terrain en comprend les évolutions et les spécificités avec une précision qu'un outil en ligne ne peut offrir.
+                Le marché immobilier ne se résume pas à des données générales. Un professionnel actif sur le terrain en comprend les évolutions et les spécificités avec une précision qu&apos;un outil en ligne ne peut offrir.
               </p>
             </div>
             <div className="card">
-              <h3 style={{ fontSize: 14, fontWeight: 500, marginBottom: 10 }}>Le regard d'un professionnel change tout</h3>
+              <h3 style={{ fontSize: 14, fontWeight: 500, marginBottom: 10 }}>Le regard d&apos;un professionnel change tout</h3>
               <p style={{ fontSize: 13, color: "#888780", lineHeight: 1.7 }}>
-                La visite d'un professionnel permet d'apprécier le bien dans tous ses aspects, d'en révéler les atouts et de vous conseiller avec précision selon votre situation et votre projet.
+                La visite d&apos;un professionnel permet d&apos;apprécier le bien dans tous ses aspects, d&apos;en révéler les atouts et de vous conseiller avec précision selon votre situation et votre projet.
               </p>
             </div>
             <div className="card span-2" style={{ gridColumn: "span 2" }}>
-              <h3 style={{ fontSize: 14, fontWeight: 500, marginBottom: 10 }}>L'humain au centre de votre projet</h3>
+              <h3 style={{ fontSize: 14, fontWeight: 500, marginBottom: 10 }}>L&apos;humain au centre de votre projet</h3>
               <p style={{ fontSize: 13, color: "#888780", lineHeight: 1.7 }}>
-                Au-delà de l'estimation, un professionnel vous accompagne, vous conseille et vous aide à mieux comprendre les étapes de votre projet immobilier.
+                Au-delà de l&apos;estimation, un professionnel vous accompagne, vous conseille et vous aide à mieux comprendre les étapes de votre projet immobilier.
               </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ── COMMENT ÇA FONCTIONNE ── */}
-      <section style={{ background: "#1a1a18", color: "#FAFAF8", padding: "80px 32px" }}>
+      <section className="section-pad" style={{ background: "#1a1a18", color: "#FAFAF8", padding: "80px 32px" }}>
         <div style={{ maxWidth: 1200, margin: "0 auto" }}>
           <div className="why-layout" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 64, alignItems: "center" }}>
             <div>
@@ -582,7 +609,7 @@ export default function RealEstateLeadPage() {
                 Votre estimation en quelques étapes simples
               </h2>
               <p style={{ fontSize: 16, lineHeight: 1.8, color: "#B4B2A9", fontWeight: 300 }}>
-                Complétez votre demande d'estimation en quelques instants. Un professionnel de votre secteur vous contacte ensuite et organise un rendez-vous pour en apprécier la valeur.
+                Complétez votre demande d&apos;estimation en quelques instants. Un professionnel de votre secteur vous contacte ensuite et organise un rendez-vous pour en apprécier la valeur.
               </p>
             </div>
             <div>
@@ -595,7 +622,7 @@ export default function RealEstateLeadPage() {
                   { n: "2", t: "Un professionnel vous contacte", link: false },
                   { n: "3", t: "Un rendez-vous est fixé", link: false },
                 ].map((item) => (
-                  <div key={item.n} style={{
+                  <div key={item.n} className="step-card" style={{
                     display: "flex", alignItems: "center", gap: 16,
                     background: "rgba(255,255,255,0.05)",
                     border: "1px solid rgba(255,255,255,0.08)",
@@ -609,7 +636,7 @@ export default function RealEstateLeadPage() {
                     }}>{item.n}</div>
                     <span style={{ fontSize: 15, fontWeight: 500 }}>{item.t}</span>
                     {item.link && (
-                      <a href="#formulaire" style={{
+                      <a className="step-link" href="#formulaire" style={{
                         marginLeft: "auto", padding: "7px 14px",
                         background: "#fff", color: "#1a1a18",
                         borderRadius: 8, fontSize: 13, fontWeight: 500,
@@ -626,11 +653,9 @@ export default function RealEstateLeadPage() {
         </div>
       </section>
 
-      {/* ── CTA FINAL ── */}
-      <section style={{ maxWidth: 1200, margin: "0 auto", padding: "80px 32px" }}>
+      <section className="section-pad" style={{ maxWidth: 1200, margin: "0 auto", padding: "80px 32px" }}>
         <div style={{ background: "#F1EFE8", borderRadius: 28, overflow: "hidden", display: "grid", gridTemplateColumns: "1fr 1fr" }} className="cta-layout">
-          {/* Texte + bouton */}
-          <div style={{ padding: "56px 48px" }}>
+          <div className="cta-box" style={{ padding: "56px 48px" }}>
             <p style={{ fontSize: 12, fontWeight: 500, textTransform: "uppercase", letterSpacing: "0.12em", color: "#888780", marginBottom: 14 }}>
               Vous envisagez de vendre votre bien ?
             </p>
@@ -638,7 +663,7 @@ export default function RealEstateLeadPage() {
               Une vente bien préparée commence par une estimation sérieuse
             </h2>
             <p style={{ fontSize: 15, lineHeight: 1.8, color: "#5F5E5A", fontWeight: 300, marginBottom: 32 }}>
-              Dans un marché immobilier belge de plus en plus exigeant, préparer correctement sa vente est essentiel. Entre cadre administratif, informations à rassembler et positionnement du bien sur le marché, une estimation juste permet d'avancer sur des bases solides.
+              Dans un marché immobilier belge de plus en plus exigeant, préparer correctement sa vente est essentiel. Entre cadre administratif, informations à rassembler et positionnement du bien sur le marché, une estimation juste permet d&apos;avancer sur des bases solides.
             </p>
             <a href="#formulaire" style={{
               display: "inline-flex", padding: "16px 32px",
@@ -649,7 +674,6 @@ export default function RealEstateLeadPage() {
               Je demande mon estimation gratuite
             </a>
           </div>
-          {/* Image maison belge */}
           <div style={{
             backgroundImage: "url('https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=800&auto=format&fit=crop&q=80')",
             backgroundSize: "cover", backgroundPosition: "center",
@@ -658,18 +682,15 @@ export default function RealEstateLeadPage() {
         </div>
       </section>
 
-      {/* ── FOOTER ── */}
       <footer style={{ borderTop: "1px solid #E8E6E0", background: "#fff", padding: "32px", textAlign: "center" }}>
         <span className="serif" style={{ fontSize: 16, fontWeight: 700 }}>
           EstimationGratuite<span style={{ color: "#8B6A3E" }}>.be</span>
         </span>
       </footer>
 
-      {/* ── CTA FIXE MOBILE ── */}
       <div className="mobile-cta">
         <a href="#formulaire">Démarrer mon estimation →</a>
       </div>
-
     </div>
   );
 }
