@@ -21,6 +21,8 @@ type FormState = {
 const SCRIPT_URL =
   "https://script.google.com/macros/s/AKfycbxhdY9p_l8F1i-XMqZs93_wWZnazlOkEKygFZXB-Ke33kqkZWcHwQ16ObfWFrOfgjCE/exec";
 
+const LOGO_ICON_URL = "/logo-icon.png";
+
 const STEPS: Array<{ num: Step; label: string }> = [
   { num: 1, label: "Secteur" },
   { num: 2, label: "Projet" },
@@ -91,6 +93,21 @@ export default function RealEstateLeadPage() {
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap');
         * { box-sizing: border-box; margin: 0; padding: 0; }
         .serif { font-family: 'Playfair Display', Georgia, serif; }
+        .brand-link {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          min-width: 0;
+          text-decoration: none;
+          color: inherit;
+        }
+        .brand-icon {
+          width: 36px;
+          height: 36px;
+          object-fit: contain;
+          border-radius: 8px;
+          flex-shrink: 0;
+        }
 
         input, select, textarea {
           width: 100%;
@@ -221,6 +238,7 @@ export default function RealEstateLeadPage() {
           .mobile-cta   { display: block; }
           .nav-wrap     { padding: 12px 16px !important; gap: 12px; }
           .nav-brand    { font-size: 16px !important; }
+          .brand-icon   { width: 32px !important; height: 32px !important; }
           .nav-button   { padding: 8px 12px !important; font-size: 12px !important; }
           .hero-section { overflow: hidden !important; }
           .hero-image   { display: none !important; }
@@ -241,12 +259,12 @@ export default function RealEstateLeadPage() {
         display: "flex", alignItems: "center", justifyContent: "space-between",
         boxShadow: "0 2px 16px rgba(0,0,0,0.06)", gap: 20,
       }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 10, minWidth: 0 }}>
-          <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#8B6A3E", flexShrink: 0 }} />
+        <a href="#" className="brand-link">
+          <img src={LOGO_ICON_URL} alt="EstimationGratuite.be" className="brand-icon" />
           <span className="serif nav-brand" style={{ fontSize: 18, fontWeight: 700, whiteSpace: "nowrap" }}>
             EstimationGratuite<span style={{ color: "#8B6A3E" }}>.be</span>
           </span>
-        </div>
+        </a>
         <a className="nav-button" href="#formulaire" style={{
           padding: "9px 20px", background: "#1a1a18", color: "#fff",
           borderRadius: 8, fontSize: 14, fontWeight: 500, textDecoration: "none", whiteSpace: "nowrap",
@@ -466,9 +484,9 @@ export default function RealEstateLeadPage() {
 
                     {step === 4 && (
                       <div className="step-fade">
-                        <h2 className="serif" style={{ fontSize: 20, fontWeight: 700, marginBottom: 6 }}>Vos coordonnées</h2>
+                        <h2 className="serif" style={{ fontSize: 20, fontWeight: 700, marginBottom: 6 }}>Où pouvons-nous vous recontacter ?</h2>
                         <p style={{ fontSize: 13, color: "#888780", marginBottom: 24, lineHeight: 1.6 }}>
-                          Un professionnel immobilier actif dans votre secteur pourra vous contacter dans le cadre de votre demande.
+                          Un professionnel immobilier actif dans votre secteur pourra vous contacter pour échanger sur votre bien et votre demande d’estimation.
                         </p>
                         <div className="field">
                           <label>Prénom et nom</label>
@@ -674,9 +692,15 @@ export default function RealEstateLeadPage() {
       </section>
 
       <footer style={{ borderTop: "1px solid #E8E6E0", background: "#fff", padding: "32px", textAlign: "center" }}>
-        <span className="serif" style={{ fontSize: 16, fontWeight: 700 }}>
-          EstimationGratuite<span style={{ color: "#8B6A3E" }}>.be</span>
-        </span>
+        <div style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 10, marginBottom: 8 }}>
+          <img src={LOGO_ICON_URL} alt="EstimationGratuite.be" style={{ width: 34, height: 34, objectFit: "contain", borderRadius: 8 }} />
+          <span className="serif" style={{ fontSize: 16, fontWeight: 700 }}>
+            EstimationGratuite<span style={{ color: "#8B6A3E" }}>.be</span>
+          </span>
+        </div>
+        <p style={{ fontSize: 12, color: "#888780" }}>
+          L’estimation immobilière avec un regard humain
+        </p>
       </footer>
 
       <div className="mobile-cta">
