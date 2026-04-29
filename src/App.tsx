@@ -19,7 +19,7 @@ type FormState = {
 };
 
 const SCRIPT_URL =
-  "https://script.google.com/macros/s/AKfycbztjZoWZFXlkzzX_BvNRNq0izXCf1gk5FmQiOt7p_Z3DC_Y03IWaR0Ya_iRjWSAWgHD/exec";
+  "https://script.google.com/macros/library/d/1aep85SeyNRpn5hqXPfnGHjrbSAZMPqjvmcGT8QO_xZov_srdWAu9HaMn/9";
 
 const STEPS: Array<{ num: Step; label: string }> = [
   { num: 1, label: "Secteur" },
