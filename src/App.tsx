@@ -3,15 +3,15 @@ import { useRef, useState } from "react";
 type Step = 1 | 2 | 3 | 4;
 
 type FormState = {
+  codePostal: string;
+  projet: string;
+  delai: string;
   typeBien: string;
   chambres: string;
-  surface: string;
   etat: string;
   rue: string;
   numero: string;
-  codePostal: string;
   ville: string;
-  delai: string;
   message: string;
   nom: string;
   telephone: string;
@@ -19,25 +19,25 @@ type FormState = {
 };
 
 const SCRIPT_URL =
-  "https://script.google.com/macros/s/AKfycbx2jie5IQkp4FX4s8dWfTnLIBQlIdCmRwEoILvPzazyTY_yOegpkR5BUci1KY9Y4cHY/exec";
+  "https://script.google.com/macros/s/AKfycbztjZoWZFXlkzzX_BvNRNq0izXCf1gk5FmQiOt7p_Z3DC_Y03IWaR0Ya_iRjWSAWgHD/exec";
 
 const STEPS: Array<{ num: Step; label: string }> = [
-  { num: 1, label: "Votre bien" },
-  { num: 2, label: "Localisation" },
-  { num: 3, label: "Votre projet" },
+  { num: 1, label: "Secteur" },
+  { num: 2, label: "Projet" },
+  { num: 3, label: "Bien" },
   { num: 4, label: "Coordonnées" },
 ];
 
 const INITIAL_FORM: FormState = {
+  codePostal: "",
+  projet: "",
+  delai: "",
   typeBien: "",
   chambres: "",
-  surface: "",
   etat: "",
   rue: "",
   numero: "",
-  codePostal: "",
   ville: "",
-  delai: "",
   message: "",
   nom: "",
   telephone: "",
@@ -57,10 +57,10 @@ export default function RealEstateLeadPage() {
   };
 
   const canNext = (): boolean => {
-    if (step === 1) return Boolean(form.typeBien && form.chambres && form.surface && form.etat);
-    if (step === 2) return Boolean(form.rue && form.numero && form.codePostal && form.ville);
-    if (step === 3) return Boolean(form.delai);
-    if (step === 4) return Boolean(form.nom && form.telephone && form.email);
+    if (step === 1) return Boolean(form.codePostal);
+    if (step === 2) return Boolean(form.projet && form.delai);
+    if (step === 3) return Boolean(form.typeBien && form.chambres && form.etat);
+    if (step === 4) return Boolean(form.nom && form.telephone && form.email && form.rue && form.numero && form.ville);
     return false;
   };
 
@@ -269,13 +269,13 @@ export default function RealEstateLeadPage() {
               <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 24 }}>
                 <span className="badge badge-green">Estimation gratuite</span>
                 <span className="badge badge-amber">Sans engagement</span>
-                <span className="badge badge-blue">Analyse locale</span>
+                <span className="badge badge-blue">Professionnel local</span>
               </div>
               <h1 className="serif" style={{ fontSize: "clamp(34px, 4vw, 52px)", fontWeight: 700, lineHeight: 1.15, letterSpacing: "-0.02em", marginBottom: 20 }}>
-                Découvrez combien vaut réellement votre bien grâce à une estimation gratuite
+                Combien vaut vraiment votre bien aujourd&apos;hui ?
               </h1>
-              <p style={{ fontSize: 17, lineHeight: 1.8, color: "#5F5E5A", maxWidth: 500, marginBottom: 32, fontWeight: 300 }}>
-                Recevez une première estimation gratuite, sans engagement, basée sur les caractéristiques de votre bien et la réalité du marché dans votre secteur.
+              <p style={{ fontSize: 17, lineHeight: 1.8, color: "#5F5E5A", maxWidth: 520, marginBottom: 32, fontWeight: 300 }}>
+                Votre demande est transmise à un professionnel immobilier actif dans votre secteur, afin d&apos;échanger sur votre bien et d&apos;estimer sa valeur gratuitement, sans engagement.
               </p>
               <div style={{ marginBottom: 36 }}>
                 <a href="#formulaire" style={{
@@ -302,9 +302,9 @@ export default function RealEstateLeadPage() {
               </div>
               <div className="mini-cards" style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12 }}>
                 {[
-                  { title: "Analyse du marché local", desc: "Votre bien est évalué en fonction du marché local, de son agencement et de ses caractéristiques." },
+                  { title: "Professionnel du secteur", desc: "Votre demande est orientée vers un professionnel immobilier actif localement." },
                   { title: "Sans obligation de vente", desc: "Demander une estimation ne vous engage à aucune mise en vente de votre bien." },
-                  { title: "Pour mieux définir votre projet", desc: "Vous obtenez un repère concret pour réfléchir plus sereinement à la suite de votre projet immobilier." },
+                  { title: "Pour mieux définir votre projet", desc: "Vous obtenez un repère concret pour avancer plus sereinement dans votre réflexion." },
                 ].map((card) => (
                   <div key={card.title} className="card" style={{ padding: 16 }}>
                     <div style={{ fontSize: 13, fontWeight: 500, marginBottom: 6 }}>{card.title}</div>
@@ -331,26 +331,26 @@ export default function RealEstateLeadPage() {
                       margin: "0 auto 20px", fontSize: 22,
                     }}>✓</div>
                     <h2 className="serif" style={{ fontSize: 22, fontWeight: 700, marginBottom: 12 }}>
-                      Demande envoyée !
+                      Votre demande a bien été transmise
                     </h2>
                     <p style={{ fontSize: 14, color: "#5F5E5A", lineHeight: 1.75 }}>
-                      Un professionnel de votre secteur vous contactera sous 48h pour organiser la visite d&apos;estimation, gratuitement et sans engagement.
+                      Un professionnel immobilier actif dans votre secteur vous contactera afin d&apos;échanger sur votre bien et, si nécessaire, organiser une estimation gratuite et sans engagement.
                     </p>
                     <div style={{ marginTop: 24, padding: "14px 16px", background: "#F7F5F0", borderRadius: 12, fontSize: 13, color: "#888780" }}>
-                      Réponse sous 48h · Aucun engagement · Professionnel de votre secteur
+                      Analyse de votre demande · Contact par un professionnel · Estimation sans engagement
                     </div>
                   </div>
                 ) : (
                   <form action={SCRIPT_URL} method="POST" target="hidden_iframe" onSubmit={handleSubmit}>
+                    <input type="hidden" name="codePostal" value={form.codePostal} readOnly />
+                    <input type="hidden" name="projet" value={form.projet} readOnly />
+                    <input type="hidden" name="delai" value={form.delai} readOnly />
                     <input type="hidden" name="typeBien" value={form.typeBien} readOnly />
                     <input type="hidden" name="chambres" value={form.chambres} readOnly />
-                    <input type="hidden" name="surface" value={form.surface} readOnly />
                     <input type="hidden" name="etat" value={form.etat} readOnly />
                     <input type="hidden" name="rue" value={form.rue} readOnly />
                     <input type="hidden" name="numero" value={form.numero} readOnly />
-                    <input type="hidden" name="codePostal" value={form.codePostal} readOnly />
                     <input type="hidden" name="ville" value={form.ville} readOnly />
-                    <input type="hidden" name="delai" value={form.delai} readOnly />
                     <input type="hidden" name="message" value={form.message} readOnly />
                     <input type="hidden" name="nom" value={form.nom} readOnly />
                     <input type="hidden" name="telephone" value={form.telephone} readOnly />
@@ -378,18 +378,64 @@ export default function RealEstateLeadPage() {
 
                     {step === 1 && (
                       <div className="step-fade">
-                        <h2 className="serif" style={{ fontSize: 20, fontWeight: 700, marginBottom: 6 }}>Votre bien</h2>
+                        <h2 className="serif" style={{ fontSize: 20, fontWeight: 700, marginBottom: 6 }}>Où se situe le bien à estimer ?</h2>
                         <p style={{ fontSize: 13, color: "#888780", marginBottom: 24, lineHeight: 1.6 }}>
-                          Quelques informations sur le bien à estimer.
+                          Le code postal permet de transmettre votre demande à un professionnel actif dans votre secteur.
+                        </p>
+                        <div className="field">
+                          <label>Code postal du bien</label>
+                          <input
+                            type="text"
+                            inputMode="numeric"
+                            placeholder="Ex. 6230"
+                            value={form.codePostal}
+                            onChange={(e) => setField("codePostal", e.target.value)}
+                            autoComplete="postal-code"
+                          />
+                        </div>
+                      </div>
+                    )}
+
+                    {step === 2 && (
+                      <div className="step-fade">
+                        <h2 className="serif" style={{ fontSize: 20, fontWeight: 700, marginBottom: 6 }}>Quel est votre projet ?</h2>
+                        <p style={{ fontSize: 13, color: "#888780", marginBottom: 24, lineHeight: 1.6 }}>
+                          Ces informations permettent de mieux comprendre votre besoin avant la prise de contact.
+                        </p>
+                        <div className="field">
+                          <label>Votre projet</label>
+                          <div style={{ display: "grid", gap: 8 }}>
+                            {["Je souhaite vendre mon bien", "Je prépare une vente dans les prochains mois", "Je souhaite connaître la valeur de mon bien", "Je me renseigne simplement"].map((project) => (
+                              <button key={project} type="button" className={`option-btn${form.projet === project ? " selected" : ""}`} onClick={() => setField("projet", project)}>
+                                {project}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                        <div className="field" style={{ marginTop: 16 }}>
+                          <label>Délai de vente envisagé</label>
+                          <div style={{ display: "grid", gap: 8 }}>
+                            {["Dès que possible", "Dans les 3 mois", "Dans les 6 mois", "Pas encore défini"].map((delay) => (
+                              <button key={delay} type="button" className={`option-btn${form.delai === delay ? " selected" : ""}`} onClick={() => setField("delai", delay)}>
+                                {delay}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {step === 3 && (
+                      <div className="step-fade">
+                        <h2 className="serif" style={{ fontSize: 20, fontWeight: 700, marginBottom: 6 }}>Quelques détails sur votre bien</h2>
+                        <p style={{ fontSize: 13, color: "#888780", marginBottom: 24, lineHeight: 1.6 }}>
+                          Ces éléments aident le professionnel à préparer son premier échange avec vous.
                         </p>
                         <div className="field">
                           <label>Type de bien</label>
                           <div className="opts-4" style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: 8 }}>
-                            {["Maison", "Appartement", "Studio", "Duplex", "Triplex", "Terrain", "Immeuble"].map((type) => (
-                              <button key={type} type="button"
-                                className={`option-btn${form.typeBien === type ? " selected" : ""}`}
-                                onClick={() => setField("typeBien", type)}
-                                style={{ textAlign: "center", padding: "11px 8px", fontSize: 13 }}>
+                            {["Maison", "Appartement", "Studio", "Duplex", "Triplex", "Terrain", "Immeuble", "Autre"].map((type) => (
+                              <button key={type} type="button" className={`option-btn${form.typeBien === type ? " selected" : ""}`} onClick={() => setField("typeBien", type)} style={{ textAlign: "center", padding: "11px 8px", fontSize: 13 }}>
                                 {type}
                               </button>
                             ))}
@@ -399,95 +445,21 @@ export default function RealEstateLeadPage() {
                           <label>Nombre de chambres</label>
                           <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                             {["0", "1", "2", "3", "4", "5+"].map((count) => (
-                              <button key={count} type="button"
-                                className={`option-btn${form.chambres === count ? " selected" : ""}`}
-                                onClick={() => setField("chambres", count)}
-                                style={{ textAlign: "center", flex: 1, minWidth: 46, padding: "11px 6px", fontSize: 14, fontWeight: 500 }}>
+                              <button key={count} type="button" className={`option-btn${form.chambres === count ? " selected" : ""}`} onClick={() => setField("chambres", count)} style={{ textAlign: "center", flex: 1, minWidth: 46, padding: "11px 6px", fontSize: 14, fontWeight: 500 }}>
                                 {count}
                               </button>
                             ))}
                           </div>
                         </div>
-                        <div className="grid-2" style={{ marginTop: 4 }}>
-                          <div className="field">
-                            <label>Surface habitable (m²)</label>
-                            <input type="number" min="1" placeholder="120"
-                              value={form.surface} onChange={(e) => setField("surface", e.target.value)} />
-                          </div>
-                          <div className="field">
-                            <label>État général</label>
-                            <select value={form.etat} onChange={(e) => setField("etat", e.target.value)}>
-                              <option value="">Choisir</option>
-                              <option value="À rénover">À rénover</option>
-                              <option value="À rafraîchir">À rafraîchir</option>
-                              <option value="Bon état">Bon état</option>
-                              <option value="Excellent état">Excellent état</option>
-                            </select>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
-                    {step === 2 && (
-                      <div className="step-fade">
-                        <h2 className="serif" style={{ fontSize: 20, fontWeight: 700, marginBottom: 6 }}>Localisation du bien</h2>
-                        <p style={{ fontSize: 13, color: "#888780", marginBottom: 24, lineHeight: 1.6 }}>
-                          L&apos;adresse exacte permet au professionnel de préparer son analyse du marché local.
-                        </p>
-                        <div className="grid-2">
-                          <div className="field">
-                            <label>Rue</label>
-                            <input type="text" placeholder="Rue de la Gare"
-                              value={form.rue} onChange={(e) => setField("rue", e.target.value)} />
-                          </div>
-                          <div className="field">
-                            <label>Numéro</label>
-                            <input type="text" placeholder="12"
-                              value={form.numero} onChange={(e) => setField("numero", e.target.value)} />
-                          </div>
-                        </div>
-                        <div className="grid-2">
-                          <div className="field">
-                            <label>Code postal</label>
-                            <input type="text" placeholder="6230"
-                              value={form.codePostal} onChange={(e) => setField("codePostal", e.target.value)} />
-                          </div>
-                          <div className="field">
-                            <label>Ville / Commune</label>
-                            <input type="text" placeholder="Pont-à-Celles"
-                              value={form.ville} onChange={(e) => setField("ville", e.target.value)} />
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
-                    {step === 3 && (
-                      <div className="step-fade">
-                        <h2 className="serif" style={{ fontSize: 20, fontWeight: 700, marginBottom: 6 }}>Votre projet</h2>
-                        <p style={{ fontSize: 13, color: "#888780", marginBottom: 24, lineHeight: 1.6 }}>
-                          Ces informations permettent au professionnel de mieux adapter son approche.
-                        </p>
                         <div className="field">
-                          <label>Délai de vente envisagé</label>
-                          <div style={{ display: "grid", gap: 8 }}>
-                            {["Dès que possible", "Dans les 3 mois", "Dans les 6 mois", "Je me renseigne simplement"].map((delay) => (
-                              <button key={delay} type="button"
-                                className={`option-btn${form.delai === delay ? " selected" : ""}`}
-                                onClick={() => setField("delai", delay)}>
-                                {delay}
-                              </button>
-                            ))}
-                          </div>
-                        </div>
-                        <div className="field" style={{ marginTop: 16 }}>
-                          <label>
-                            Précisions supplémentaires <span style={{ fontWeight: 400, color: "#B4B2A9" }}>(facultatif)</span>
-                          </label>
-                          <textarea rows={3}
-                            placeholder="Jardin, garage, rénovations récentes..."
-                            value={form.message}
-                            onChange={(e) => setField("message", e.target.value)}
-                            style={{ resize: "vertical" }} />
+                          <label>État général</label>
+                          <select value={form.etat} onChange={(e) => setField("etat", e.target.value)}>
+                            <option value="">Choisir</option>
+                            <option value="À rénover">À rénover</option>
+                            <option value="À rafraîchir">À rafraîchir</option>
+                            <option value="Bon état">Bon état</option>
+                            <option value="Excellent état">Excellent état</option>
+                          </select>
                         </div>
                       </div>
                     )}
@@ -496,22 +468,41 @@ export default function RealEstateLeadPage() {
                       <div className="step-fade">
                         <h2 className="serif" style={{ fontSize: 20, fontWeight: 700, marginBottom: 6 }}>Vos coordonnées</h2>
                         <p style={{ fontSize: 13, color: "#888780", marginBottom: 24, lineHeight: 1.6 }}>
-                          Pour que le professionnel puisse vous contacter et fixer le rendez-vous d&apos;estimation.
+                          Un professionnel immobilier actif dans votre secteur pourra vous contacter dans le cadre de votre demande.
                         </p>
                         <div className="field">
                           <label>Prénom et nom</label>
-                          <input type="text" placeholder="Jean Dupont"
-                            value={form.nom} onChange={(e) => setField("nom", e.target.value)} />
+                          <input type="text" placeholder="Jean Dupont" value={form.nom} onChange={(e) => setField("nom", e.target.value)} />
+                        </div>
+                        <div className="grid-2">
+                          <div className="field">
+                            <label>Téléphone</label>
+                            <input type="tel" inputMode="tel" placeholder="0475 12 34 56" value={form.telephone} onChange={(e) => setField("telephone", e.target.value)} />
+                          </div>
+                          <div className="field">
+                            <label>E-mail</label>
+                            <input type="email" placeholder="jean@exemple.be" value={form.email} onChange={(e) => setField("email", e.target.value)} />
+                          </div>
+                        </div>
+                        <div className="grid-2">
+                          <div className="field">
+                            <label>Rue</label>
+                            <input type="text" placeholder="Rue de la Gare" value={form.rue} onChange={(e) => setField("rue", e.target.value)} />
+                          </div>
+                          <div className="field">
+                            <label>Numéro</label>
+                            <input type="text" placeholder="12" value={form.numero} onChange={(e) => setField("numero", e.target.value)} />
+                          </div>
                         </div>
                         <div className="field">
-                          <label>Téléphone</label>
-                          <input type="tel" inputMode="tel" placeholder="+32 4..."
-                            value={form.telephone} onChange={(e) => setField("telephone", e.target.value)} />
+                          <label>Ville / Commune</label>
+                          <input type="text" placeholder="Pont-à-Celles" value={form.ville} onChange={(e) => setField("ville", e.target.value)} />
                         </div>
-                        <div className="field">
-                          <label>E-mail</label>
-                          <input type="email" placeholder="jean@exemple.be"
-                            value={form.email} onChange={(e) => setField("email", e.target.value)} />
+                        <div className="field" style={{ marginTop: 16 }}>
+                          <label>
+                            Précisions supplémentaires <span style={{ fontWeight: 400, color: "#B4B2A9" }}>(facultatif)</span>
+                          </label>
+                          <textarea rows={3} placeholder="Jardin, garage, rénovations récentes..." value={form.message} onChange={(e) => setField("message", e.target.value)} style={{ resize: "vertical" }} />
                         </div>
                         <div style={{
                           display: "flex", justifyContent: "center", gap: 20,
@@ -540,7 +531,7 @@ export default function RealEstateLeadPage() {
                         </button>
                       ) : (
                         <button type="submit" className="btn-primary" disabled={!canNext() || isSubmitting}>
-                          {isSubmitting ? "Envoi en cours..." : "Demander mon estimation →"}
+                          {isSubmitting ? "Envoi en cours..." : "Obtenir mon estimation gratuite →"}
                         </button>
                       )}
                     </div>
@@ -552,7 +543,7 @@ export default function RealEstateLeadPage() {
                     )}
 
                     <p style={{ marginTop: 14, fontSize: 11, color: "#B4B2A9", lineHeight: 1.6, textAlign: "center" }}>
-                      En cliquant sur « Demander mon estimation », vous acceptez la politique de confidentialité de EstimationGratuite.be et le traitement de vos données afin d&apos;être recontacté dans le cadre de votre demande d&apos;estimation.
+                      En cliquant sur « Obtenir mon estimation gratuite », vous acceptez la politique de confidentialité de EstimationGratuite.be et le traitement de vos données afin d&apos;être contacté par un professionnel immobilier actif dans votre secteur dans le cadre de votre demande d&apos;estimation.
                     </p>
                   </form>
                 )}
@@ -577,9 +568,9 @@ export default function RealEstateLeadPage() {
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
             <div className="card">
-              <h3 style={{ fontSize: 14, fontWeight: 500, marginBottom: 10 }}>Une vision plus juste du marché</h3>
+              <h3 style={{ fontSize: 14, fontWeight: 500, marginBottom: 10 }}>Un professionnel actif localement</h3>
               <p style={{ fontSize: 13, color: "#888780", lineHeight: 1.7 }}>
-                Le marché immobilier ne se résume pas à des données générales. Un professionnel actif sur le terrain en comprend les évolutions et les spécificités avec une précision qu&apos;un outil en ligne ne peut offrir.
+                Votre demande est orientée vers un professionnel immobilier qui connaît votre secteur et ses réalités de marché.
               </p>
             </div>
             <div className="card">
@@ -609,7 +600,7 @@ export default function RealEstateLeadPage() {
                 Votre estimation en quelques étapes simples
               </h2>
               <p style={{ fontSize: 16, lineHeight: 1.8, color: "#B4B2A9", fontWeight: 300 }}>
-                Complétez votre demande d&apos;estimation en quelques instants. Un professionnel de votre secteur vous contacte ensuite et organise un rendez-vous pour en apprécier la valeur.
+                Complétez votre demande d&apos;estimation en quelques instants. Un professionnel immobilier actif dans votre secteur vous contacte ensuite pour échanger sur votre bien.
               </p>
             </div>
             <div>
@@ -618,9 +609,9 @@ export default function RealEstateLeadPage() {
               </p>
               <div style={{ display: "grid", gap: 12 }}>
                 {[
-                  { n: "1", t: "Vous introduisez votre demande", link: true },
-                  { n: "2", t: "Un professionnel vous contacte", link: false },
-                  { n: "3", t: "Un rendez-vous est fixé", link: false },
+                  { n: "1", t: "Vous indiquez le secteur du bien", link: true },
+                  { n: "2", t: "Votre demande est analysée", link: false },
+                  { n: "3", t: "Un professionnel vous contacte", link: false },
                 ].map((item) => (
                   <div key={item.n} className="step-card" style={{
                     display: "flex", alignItems: "center", gap: 16,
@@ -642,7 +633,7 @@ export default function RealEstateLeadPage() {
                         borderRadius: 8, fontSize: 13, fontWeight: 500,
                         textDecoration: "none", whiteSpace: "nowrap",
                       }}>
-                        Demander mon estimation
+                        Commencer
                       </a>
                     )}
                   </div>
@@ -663,7 +654,7 @@ export default function RealEstateLeadPage() {
               Une vente bien préparée commence par une estimation sérieuse
             </h2>
             <p style={{ fontSize: 15, lineHeight: 1.8, color: "#5F5E5A", fontWeight: 300, marginBottom: 32 }}>
-              Dans un marché immobilier belge de plus en plus exigeant, préparer correctement sa vente est essentiel. Entre cadre administratif, informations à rassembler et positionnement du bien sur le marché, une estimation juste permet d&apos;avancer sur des bases solides.
+              Dans un marché immobilier belge de plus en plus exigeant, préparer correctement sa vente est essentiel. Une estimation avec un professionnel actif dans votre secteur permet d&apos;avancer sur des bases solides.
             </p>
             <a href="#formulaire" style={{
               display: "inline-flex", padding: "16px 32px",
