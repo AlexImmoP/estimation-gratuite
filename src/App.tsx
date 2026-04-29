@@ -102,8 +102,8 @@ export default function RealEstateLeadPage() {
           color: inherit;
         }
         .brand-icon {
-          width: 36px;
-          height: 36px;
+          width: 48px;
+          height: 48px;
           object-fit: contain;
           border-radius: 8px;
           flex-shrink: 0;
@@ -238,7 +238,7 @@ export default function RealEstateLeadPage() {
           .mobile-cta   { display: block; }
           .nav-wrap     { padding: 12px 16px !important; gap: 12px; }
           .nav-brand    { font-size: 16px !important; }
-          .brand-icon   { width: 32px !important; height: 32px !important; }
+          .brand-icon   { width: 42px !important; height: 42px !important; }
           .nav-button   { padding: 8px 12px !important; font-size: 12px !important; }
           .hero-section { overflow: hidden !important; }
           .hero-image   { display: none !important; }
@@ -261,8 +261,8 @@ export default function RealEstateLeadPage() {
       }}>
         <a href="#" className="brand-link">
           <img src={LOGO_ICON_URL} alt="EstimationGratuite.be" className="brand-icon" />
-          <span className="serif nav-brand" style={{ fontSize: 18, fontWeight: 700, whiteSpace: "nowrap" }}>
-            EstimationGratuite<span style={{ color: "#8B6A3E" }}>.be</span>
+          <span className="serif nav-brand" style={{ fontSize: 20, fontWeight: 700, whiteSpace: "nowrap" }}>
+            <span style={{ color: "#1a1a18" }}>Estimation</span><span style={{ color: "#8B6A3E" }}>Gratuite</span><span style={{ color: "#1a1a18" }}>.be</span>
           </span>
         </a>
         <a className="nav-button" href="#formulaire" style={{
@@ -693,9 +693,9 @@ export default function RealEstateLeadPage() {
 
       <footer style={{ borderTop: "1px solid #E8E6E0", background: "#fff", padding: "32px", textAlign: "center" }}>
         <div style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 10, marginBottom: 8 }}>
-          <img src={LOGO_ICON_URL} alt="EstimationGratuite.be" style={{ width: 34, height: 34, objectFit: "contain", borderRadius: 8 }} />
-          <span className="serif" style={{ fontSize: 16, fontWeight: 700 }}>
-            EstimationGratuite<span style={{ color: "#8B6A3E" }}>.be</span>
+          <img src={LOGO_ICON_URL} alt="EstimationGratuite.be" style={{ width: 46, height: 46, objectFit: "contain", borderRadius: 8 }} />
+          <span className="serif" style={{ fontSize: 18, fontWeight: 700 }}>
+            <span style={{ color: "#1a1a18" }}>Estimation</span><span style={{ color: "#8B6A3E" }}>Gratuite</span><span style={{ color: "#1a1a18" }}>.be</span>
           </span>
         </div>
         <p style={{ fontSize: 12, color: "#888780" }}>
