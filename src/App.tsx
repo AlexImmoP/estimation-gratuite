@@ -102,6 +102,17 @@ export default function RealEstateLeadPage() {
   }, [step, submitted]);
 
   useEffect(() => {
+    if (!submitted) return;
+    const form = document.getElementById("formulaire");
+    if (!form) return;
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        form.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+    });
+  }, [submitted]);
+
+  useEffect(() => {
     const handleScroll = () => {
       const form = document.getElementById("formulaire");
       if (!form) return;
@@ -142,7 +153,8 @@ export default function RealEstateLeadPage() {
         .field { margin-bottom: 14px; }
         .field label { display: block; font-size: 12px; font-weight: 500; color: #888780; margin-bottom: 6px; letter-spacing: 0.03em; text-transform: uppercase; }
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .btn-primary { width: 100%; padding: 15px 24px; background: #1a1a18; color: #fff; border: none; border-radius: 12px; font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 500; cursor: pointer; transition: background 0.2s, transform 0.15s, opacity 0.2s; }
+        .btn-primary { width: 100%; padding: 15px 24px; background: #1a1a18; color: #fff; border: none; border-radius: 12px; font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 500; cursor: pointer; transition: background 0.2s, transform 0.15s, opacity 0.2s; min-height: 52px; }
+        @media (max-width: 900px) { .btn-primary { min-height: 56px; font-size: 16px; } }
         .btn-primary:hover:not(:disabled) { background: #333330; transform: translateY(-1px); }
         .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
         .btn-back { background: none; border: 1.5px solid #D6D4CE; border-radius: 12px; padding: 13px 20px; font-family: 'DM Sans', sans-serif; font-size: 14px; color: #888780; cursor: pointer; transition: border-color 0.2s, color 0.2s; }
@@ -309,6 +321,10 @@ export default function RealEstateLeadPage() {
 
                       {step === 2 && (
                         <div className="step-fade">
+                          <div style={{ display: "flex", alignItems: "center", gap: 10, background: "#EAF3DE", borderRadius: 12, padding: "10px 14px", marginBottom: 18 }}>
+                            <span style={{ fontSize: 18 }}>✓</span>
+                            <span style={{ fontSize: 13, color: "#3B6D11", fontWeight: 500 }}>Parfait ! Nous avons des professionnels actifs dans le secteur <strong>{form.codePostal}</strong></span>
+                          </div>
                           <h2 className="serif" style={{ fontSize: 20, fontWeight: 700, marginBottom: 6 }}>Quel est votre projet ?</h2>
                           <p style={{ fontSize: 13, color: "#888780", marginBottom: 18, lineHeight: 1.6 }}>Ces informations permettent de mieux comprendre votre besoin avant la prise de contact.</p>
                           <div className="field">
