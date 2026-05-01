@@ -154,7 +154,7 @@ export default function RealEstateLeadPage() {
         .field label { display: block; font-size: 12px; font-weight: 500; color: #888780; margin-bottom: 6px; letter-spacing: 0.03em; text-transform: uppercase; }
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .btn-primary { width: 100%; padding: 15px 24px; background: #1a1a18; color: #fff; border: none; border-radius: 12px; font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 500; cursor: pointer; transition: background 0.2s, transform 0.15s, opacity 0.2s; min-height: 52px; }
-        @media (max-width: 900px) { .btn-primary { min-height: 56px; font-size: 16px; } }
+        @media (max-width: 900px) { .btn-primary { min-height: 56px; font-size: 15px; } .btn-submit { font-size: 14px; } }
         .btn-primary:hover:not(:disabled) { background: #333330; transform: translateY(-1px); }
         .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
         .btn-back { background: none; border: 1.5px solid #D6D4CE; border-radius: 12px; padding: 13px 20px; font-family: 'DM Sans', sans-serif; font-size: 14px; color: #888780; cursor: pointer; transition: border-color 0.2s, color 0.2s; }
@@ -191,10 +191,10 @@ export default function RealEstateLeadPage() {
           .hero-section { overflow: hidden !important; }
           .hero-image { display: none !important; }
           .hero-pad { padding: 40px 16px !important; }
-          .form-sticky { position: static !important; top: auto !important; }
-          .form-card { padding: 24px 18px !important; border-radius: 18px !important; min-height: 65vh !important; }
+          .form-sticky { position: static !important; top: auto !important; margin: 0 -16px !important; }
+          .form-card { padding: 24px 18px !important; border-radius: 0 !important; min-height: 65vh !important; border-left: none !important; border-right: none !important; box-shadow: none !important; }
           @supports (height: 100svh) { .form-card { min-height: 70svh !important; } }
-          .form-body { min-height: 420px; padding-bottom: 84px; }
+          .form-body { min-height: 0; padding-bottom: 84px; }
           .section-pad { padding: 56px 16px !important; }
           .cta-box { padding: 36px 20px !important; }
           .step-card { flex-direction: column !important; align-items: flex-start !important; }
@@ -381,7 +381,7 @@ export default function RealEstateLeadPage() {
 
                       {step === 4 && (
                         <div className="step-fade">
-                          <h2 className="serif" style={{ fontSize: 20, fontWeight: 700, marginBottom: 6 }}>Où pouvons-nous vous recontacter ?</h2>
+                          <h2 className="serif" style={{ fontSize: 20, fontWeight: 700, marginBottom: 6 }}>Où vous recontacter ?</h2>
                           <p style={{ fontSize: 13, color: "#888780", marginBottom: 18, lineHeight: 1.6 }}>Un professionnel immobilier actif dans votre secteur pourra vous contacter pour échanger sur votre bien et votre demande d'estimation.</p>
                           <div className="field">
                             <label>Prénom et nom</label>
@@ -427,9 +427,11 @@ export default function RealEstateLeadPage() {
 
                       {submitError && <p style={{ marginTop: 12, fontSize: 12, color: "#B3261E", textAlign: "center" }}>{submitError}</p>}
 
-                      <p style={{ marginTop: 12, fontSize: 11, color: "#B4B2A9", lineHeight: 1.6, textAlign: "center" }}>
-                        En cliquant sur « Obtenir mon estimation gratuite », vous acceptez la politique de confidentialité de EstimationGratuite.be et le traitement de vos données afin d'être contacté par un professionnel immobilier actif dans votre secteur dans le cadre de votre demande d'estimation.
-                      </p>
+                      {step === 4 && (
+                        <p style={{ marginTop: 12, fontSize: 11, color: "#B4B2A9", lineHeight: 1.6, textAlign: "center" }}>
+                          En cliquant sur « Obtenir mon estimation gratuite », vous acceptez la politique de confidentialité de EstimationGratuite.be et le traitement de vos données afin d'être contacté par un professionnel immobilier actif dans votre secteur dans le cadre de votre demande d'estimation.
+                        </p>
+                      )}
                     </div>
 
                     <div className="form-actions">
@@ -437,7 +439,7 @@ export default function RealEstateLeadPage() {
                       {step < 4 ? (
                         <button type="button" className="btn-primary" disabled={!canNext()} onClick={goNext}>Continuer →</button>
                       ) : (
-                        <button type="submit" className="btn-primary" disabled={!canNext() || isSubmitting}>{isSubmitting ? "Envoi en cours..." : "Obtenir mon estimation gratuite →"}</button>
+                        <button type="submit" className="btn-primary btn-submit" disabled={!canNext() || isSubmitting}>{isSubmitting ? "Envoi en cours..." : "Obtenir mon estimation gratuite →"}</button>
                       )}
                     </div>
                   </form>
