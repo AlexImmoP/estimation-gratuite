@@ -233,6 +233,9 @@ export default function RealEstateLeadPage() {
         }
 
         @media (max-width: 900px) {
+.form-card {
+  min-height: 65vh !important;
+}
           .hero-layout  { grid-template-columns: 1fr !important; gap: 32px !important; }
           .why-layout   { grid-template-columns: 1fr !important; gap: 28px !important; }
           .grid-2       { grid-template-columns: 1fr !important; }
