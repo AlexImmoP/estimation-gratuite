@@ -547,7 +547,11 @@ export default function RealEstateLeadPage() {
                       </div>
                     )}
 
-                    <div style={{ display: "flex", gap: 10, marginTop: 8 }}>
+                 <div style={{
+  display: "flex",
+  gap: 10,
+  marginTop: "auto"
+}}>
                       {step > 1 && (
                         <button type="button" className="btn-back" onClick={goBack} style={{ flex: "0 0 auto" }}>
                           ← Retour
