@@ -339,10 +339,15 @@ export default function RealEstateLeadPage() {
 
             <div id="formulaire" className="form-sticky" style={{ position: "sticky", top: 80 }}>
               <div className="form-card" style={{
-                background: "#fff", border: "1px solid #E8E6E0",
-                borderRadius: 24, padding: "32px 28px",
-                boxShadow: "0 8px 48px rgba(0,0,0,0.08)",
-              }}>
+  background: "#fff",
+  border: "1px solid #E8E6E0",
+  borderRadius: 24,
+  padding: "32px 28px",
+  boxShadow: "0 8px 48px rgba(0,0,0,0.08)",
+  minHeight: 520,
+  display: "flex",
+  flexDirection: "column"
+}}>
                 <iframe ref={iframeRef} name="hidden_iframe" title="hidden_iframe" style={{ display: "none" }} onLoad={handleIframeLoad} />
 
                 {submitted ? (
