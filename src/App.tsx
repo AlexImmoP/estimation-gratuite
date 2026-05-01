@@ -62,7 +62,15 @@ export default function RealEstateLeadPage() {
     if (step === 1) return Boolean(form.codePostal);
     if (step === 2) return Boolean(form.projet && form.delai);
     if (step === 3) return Boolean(form.typeBien && form.chambres && form.etat);
-    if (step === 4) return Boolean(form.nom && form.telephone && form.email && form.rue && form.numero && form.ville);
+    if (step === 4)
+      return Boolean(
+        form.nom &&
+          form.telephone &&
+          form.email &&
+          form.rue &&
+          form.numero &&
+          form.ville
+      );
     return false;
   };
 
@@ -88,11 +96,25 @@ export default function RealEstateLeadPage() {
   };
 
   return (
-    <div style={{ fontFamily: "'DM Sans', sans-serif", background: "#FAFAF8", minHeight: "100vh", color: "#1a1a18", paddingBottom: 96 }}>
+    <div
+      style={{
+        fontFamily: "'DM Sans', sans-serif",
+        background: "#FAFAF8",
+        minHeight: "100dvh",
+        color: "#1a1a18",
+        paddingBottom: 96,
+        WebkitTextSizeAdjust: "100%",
+      }}
+    >
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap');
         * { box-sizing: border-box; margin: 0; padding: 0; }
+        html, body { height: 100%; }
         .serif { font-family: 'Playfair Display', Georgia, serif; }
+
+        /* évite que l'ancre #formulaire soit cachée sous le nav sticky */
+        #formulaire { scroll-margin-top: 96px; }
+
         .brand-link {
           display: flex;
           align-items: center;
@@ -114,6 +136,7 @@ export default function RealEstateLeadPage() {
           justify-content: center;
         }
 
+        /* IMPORTANT MOBILE: 16px min sur inputs pour éviter le zoom iOS (sinon "ça saute") */
         input, select, textarea {
           width: 100%;
           padding: 13px 16px;
@@ -121,7 +144,8 @@ export default function RealEstateLeadPage() {
           border-radius: 12px;
           background: #fff;
           font-family: 'DM Sans', sans-serif;
-          font-size: 14px;
+          font-size: 16px;
+          line-height: 1.25;
           color: #1a1a18;
           outline: none;
           transition: border-color 0.2s, box-shadow 0.2s;
@@ -209,9 +233,37 @@ export default function RealEstateLeadPage() {
         .badge-blue  { background: #E6F1FB; color: #185FA5; }
 
         .card { background: #fff; border: 1px solid #E8E6E0; border-radius: 18px; padding: 20px; }
-        .step-fade { animation: stepIn 0.25s ease both; }
+
+        /*
+          Stabilité multi-étapes:
+          - on garde une zone "body" avec min-height
+          - on garde une zone "actions" fixe en bas de la carte
+        */
+        .form-card {
+          background: #fff;
+          border: 1px solid #E8E6E0;
+          border-radius: 24px;
+          padding: 32px 28px;
+          box-shadow: 0 8px 48px rgba(0,0,0,0.08);
+          min-height: 520px;
+          display: flex;
+          flex-direction: column;
+        }
+        .form-body {
+          flex: 1;
+          min-height: 360px; /* évite les sauts entre étapes */
+          display: flex;
+          flex-direction: column;
+        }
+        .form-actions {
+          display: flex;
+          gap: 10px;
+          margin-top: 18px;
+        }
+
+        .step-fade { animation: stepIn 0.22s ease both; }
         @keyframes stepIn {
-          from { opacity: 0; transform: translateX(16px); }
+          from { opacity: 0; transform: translateX(12px); }
           to   { opacity: 1; transform: translateX(0); }
         }
 
@@ -233,9 +285,6 @@ export default function RealEstateLeadPage() {
         }
 
         @media (max-width: 900px) {
-.form-card {
-  min-height: 65vh !important;
-}
           .hero-layout  { grid-template-columns: 1fr !important; gap: 32px !important; }
           .why-layout   { grid-template-columns: 1fr !important; gap: 28px !important; }
           .grid-2       { grid-template-columns: 1fr !important; }
@@ -252,7 +301,14 @@ export default function RealEstateLeadPage() {
           .hero-image   { display: none !important; }
           .hero-pad     { padding: 40px 16px !important; }
           .form-sticky  { position: static !important; top: auto !important; }
-          .form-card    { padding: 24px 18px !important; border-radius: 18px !important; }
+
+          /* Remplace le 65vh (instable mobile) par unités viewport stables si supportées */
+          .form-card    { padding: 24px 18px !important; border-radius: 18px !important; min-height: 65vh !important; }
+          @supports (height: 100svh) {
+            .form-card { min-height: 70svh !important; }
+          }
+
+          .form-body { min-height: 420px; }
           .section-pad  { padding: 56px 16px !important; }
           .cta-box      { padding: 36px 20px !important; }
           .step-card    { flex-direction: column !important; align-items: flex-start !important; }
@@ -260,119 +316,286 @@ export default function RealEstateLeadPage() {
         }
       `}</style>
 
-      <nav className="nav-wrap" style={{
-        position: "sticky", top: 0, zIndex: 999,
-        background: "#fff", borderBottom: "1px solid #E8E6E0",
-        padding: "14px 32px",
-        display: "flex", alignItems: "center", justifyContent: "space-between",
-        boxShadow: "0 2px 16px rgba(0,0,0,0.06)", gap: 20, flexWrap: "wrap",
-      }}>
+      <nav
+        className="nav-wrap"
+        style={{
+          position: "sticky",
+          top: 0,
+          zIndex: 999,
+          background: "#fff",
+          borderBottom: "1px solid #E8E6E0",
+          padding: "14px 32px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          boxShadow: "0 2px 16px rgba(0,0,0,0.06)",
+          gap: 20,
+          flexWrap: "wrap",
+        }}
+      >
         <a href="#" className="brand-link">
-          <img src={LOGO_ICON_URL} alt="EstimationGratuite.be" className="brand-icon" />
-          <span className="serif nav-brand" style={{ fontSize: 20, fontWeight: 700, whiteSpace: "nowrap" }}>
-            <span style={{ color: "#1a1a18" }}>Estimation</span><span style={{ color: "#8B6A3E" }}>Gratuite</span><span style={{ color: "#1a1a18" }}>.be</span>
+          <img
+            src={LOGO_ICON_URL}
+            alt="EstimationGratuite.be"
+            className="brand-icon"
+          />
+          <span
+            className="serif nav-brand"
+            style={{ fontSize: 20, fontWeight: 700, whiteSpace: "nowrap" }}
+          >
+            <span style={{ color: "#1a1a18" }}>Estimation</span>
+            <span style={{ color: "#8B6A3E" }}>Gratuite</span>
+            <span style={{ color: "#1a1a18" }}>.be</span>
           </span>
         </a>
-        <a className="nav-button" href="#formulaire" style={{
-          padding: "9px 20px", background: "#1a1a18", color: "#fff",
-          borderRadius: 8, fontSize: 14, fontWeight: 500, textDecoration: "none", whiteSpace: "nowrap",
-        }}>
+        <a
+          className="nav-button"
+          href="#formulaire"
+          style={{
+            padding: "9px 20px",
+            background: "#1a1a18",
+            color: "#fff",
+            borderRadius: 8,
+            fontSize: 14,
+            fontWeight: 500,
+            textDecoration: "none",
+            whiteSpace: "nowrap",
+          }}
+        >
           Estimer mon bien gratuitement
         </a>
       </nav>
 
-      <section className="hero-section" style={{ background: "linear-gradient(135deg, #F7F5F0 0%, #fff 60%, #F7F5F0 100%)", borderBottom: "1px solid #E8E6E0", position: "relative", overflow: "hidden" }}>
-        <div className="hero-image" style={{
-          position: "absolute", top: 0, right: 0,
-          width: "38%", height: "100%",
-          backgroundImage: "url('https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=900&auto=format&fit=crop&q=80')",
-          backgroundSize: "cover", backgroundPosition: "center",
-          opacity: 0.12, pointerEvents: "none",
-        }} />
-        <div className="hero-pad" style={{ maxWidth: 1200, margin: "0 auto", padding: "64px 32px" }}>
-          <div className="hero-layout" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 64, alignItems: "start" }}>
+      <section
+        className="hero-section"
+        style={{
+          background:
+            "linear-gradient(135deg, #F7F5F0 0%, #fff 60%, #F7F5F0 100%)",
+          borderBottom: "1px solid #E8E6E0",
+          position: "relative",
+          overflow: "hidden",
+        }}
+      >
+        <div
+          className="hero-image"
+          style={{
+            position: "absolute",
+            top: 0,
+            right: 0,
+            width: "38%",
+            height: "100%",
+            backgroundImage:
+              "url('https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=900&auto=format&fit=crop&q=80')",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            opacity: 0.12,
+            pointerEvents: "none",
+          }}
+        />
+        <div
+          className="hero-pad"
+          style={{ maxWidth: 1200, margin: "0 auto", padding: "64px 32px" }}
+        >
+          <div
+            className="hero-layout"
+            style={{
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr",
+              gap: 64,
+              alignItems: "start",
+            }}
+          >
             <div>
-              <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 24 }}>
+              <div
+                style={{
+                  display: "flex",
+                  flexWrap: "wrap",
+                  gap: 8,
+                  marginBottom: 24,
+                }}
+              >
                 <span className="badge badge-green">Estimation gratuite</span>
                 <span className="badge badge-amber">Sans engagement</span>
                 <span className="badge badge-blue">Professionnel local</span>
               </div>
-              <h1 className="serif" style={{ fontSize: "clamp(34px, 4vw, 52px)", fontWeight: 700, lineHeight: 1.15, letterSpacing: "-0.02em", marginBottom: 20 }}>
+              <h1
+                className="serif"
+                style={{
+                  fontSize: "clamp(34px, 4vw, 52px)",
+                  fontWeight: 700,
+                  lineHeight: 1.15,
+                  letterSpacing: "-0.02em",
+                  marginBottom: 20,
+                }}
+              >
                 Combien vaut vraiment votre bien aujourd&apos;hui ?
               </h1>
-              <p style={{ fontSize: 17, lineHeight: 1.8, color: "#5F5E5A", maxWidth: 520, marginBottom: 32, fontWeight: 300 }}>
-                Votre demande est transmise à un professionnel immobilier actif dans votre secteur, afin d&apos;échanger sur votre bien et d&apos;estimer sa valeur gratuitement, sans engagement.
+              <p
+                style={{
+                  fontSize: 17,
+                  lineHeight: 1.8,
+                  color: "#5F5E5A",
+                  maxWidth: 520,
+                  marginBottom: 32,
+                  fontWeight: 300,
+                }}
+              >
+                Votre demande est transmise à un professionnel immobilier actif dans
+                votre secteur, afin d&apos;échanger sur votre bien et d&apos;estimer
+                sa valeur gratuitement, sans engagement.
               </p>
               <div style={{ marginBottom: 36 }}>
-                <a href="#formulaire" style={{
-                  display: "inline-flex", padding: "14px 28px",
-                  background: "#1a1a18", color: "#fff",
-                  borderRadius: 12, fontSize: 15, fontWeight: 500, textDecoration: "none",
-                }}>
+                <a
+                  href="#formulaire"
+                  style={{
+                    display: "inline-flex",
+                    padding: "14px 28px",
+                    background: "#1a1a18",
+                    color: "#fff",
+                    borderRadius: 12,
+                    fontSize: 15,
+                    fontWeight: 500,
+                    textDecoration: "none",
+                  }}
+                >
                   Obtenir mon estimation gratuite
                 </a>
-                <div style={{ marginTop: 12, display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+                <div
+                  style={{
+                    marginTop: 12,
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 8,
+                    flexWrap: "wrap",
+                  }}
+                >
                   <div style={{ display: "flex" }}>
                     {["#C4A882", "#A8896A", "#8B6A3E"].map((bg, i) => (
-                      <div key={i} style={{
-                        width: 28, height: 28, borderRadius: "50%",
-                        background: bg, border: "2px solid #F7F5F0",
-                        marginLeft: i === 0 ? 0 : -8,
-                      }} />
+                      <div
+                        key={i}
+                        style={{
+                          width: 28,
+                          height: 28,
+                          borderRadius: "50%",
+                          background: bg,
+                          border: "2px solid #F7F5F0",
+                          marginLeft: i === 0 ? 0 : -8,
+                        }}
+                      />
                     ))}
                   </div>
                   <span style={{ fontSize: 13, color: "#888780" }}>
-                    <strong style={{ color: "#1a1a18" }}>+120 propriétaires</strong> ont déjà demandé leur estimation
+                    <strong style={{ color: "#1a1a18" }}>+120 propriétaires</strong>
+                    &nbsp;ont déjà demandé leur estimation
                   </span>
                 </div>
               </div>
-              <div className="mini-cards" style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12 }}>
+              <div
+                className="mini-cards"
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "1fr 1fr 1fr",
+                  gap: 12,
+                }}
+              >
                 {[
-                  { title: "Professionnel du secteur", desc: "Votre demande est orientée vers un professionnel immobilier actif localement." },
-                  { title: "Sans obligation de vente", desc: "Demander une estimation ne vous engage à aucune mise en vente de votre bien." },
-                  { title: "Pour mieux définir votre projet", desc: "Vous obtenez un repère concret pour avancer plus sereinement dans votre réflexion." },
+                  {
+                    title: "Professionnel du secteur",
+                    desc: "Votre demande est orientée vers un professionnel immobilier actif localement.",
+                  },
+                  {
+                    title: "Sans obligation de vente",
+                    desc: "Demander une estimation ne vous engage à aucune mise en vente de votre bien.",
+                  },
+                  {
+                    title: "Pour mieux définir votre projet",
+                    desc: "Vous obtenez un repère concret pour avancer plus sereinement dans votre réflexion.",
+                  },
                 ].map((card) => (
                   <div key={card.title} className="card" style={{ padding: 16 }}>
-                    <div style={{ fontSize: 13, fontWeight: 500, marginBottom: 6 }}>{card.title}</div>
-                    <p style={{ fontSize: 12, color: "#888780", lineHeight: 1.65 }}>{card.desc}</p>
+                    <div
+                      style={{
+                        fontSize: 13,
+                        fontWeight: 500,
+                        marginBottom: 6,
+                      }}
+                    >
+                      {card.title}
+                    </div>
+                    <p
+                      style={{
+                        fontSize: 12,
+                        color: "#888780",
+                        lineHeight: 1.65,
+                      }}
+                    >
+                      {card.desc}
+                    </p>
                   </div>
                 ))}
               </div>
             </div>
 
             <div id="formulaire" className="form-sticky" style={{ position: "sticky", top: 80 }}>
-              <div className="form-card" style={{
-  background: "#fff",
-  border: "1px solid #E8E6E0",
-  borderRadius: 24,
-  padding: "32px 28px",
-  boxShadow: "0 8px 48px rgba(0,0,0,0.08)",
-  minHeight: 520,
-  display: "flex",
-  flexDirection: "column"
-}}>
-                <iframe ref={iframeRef} name="hidden_iframe" title="hidden_iframe" style={{ display: "none" }} onLoad={handleIframeLoad} />
+              <div className="form-card">
+                <iframe
+                  ref={iframeRef}
+                  name="hidden_iframe"
+                  title="hidden_iframe"
+                  style={{ display: "none" }}
+                  onLoad={handleIframeLoad}
+                />
 
                 {submitted ? (
                   <div style={{ textAlign: "center", padding: "24px 0" }}>
-                    <div style={{
-                      width: 56, height: 56, borderRadius: "50%",
-                      background: "#EAF3DE", display: "flex",
-                      alignItems: "center", justifyContent: "center",
-                      margin: "0 auto 20px", fontSize: 22,
-                    }}>✓</div>
-                    <h2 className="serif" style={{ fontSize: 22, fontWeight: 700, marginBottom: 12 }}>
+                    <div
+                      style={{
+                        width: 56,
+                        height: 56,
+                        borderRadius: "50%",
+                        background: "#EAF3DE",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        margin: "0 auto 20px",
+                        fontSize: 22,
+                      }}
+                    >
+                      ✓
+                    </div>
+                    <h2
+                      className="serif"
+                      style={{ fontSize: 22, fontWeight: 700, marginBottom: 12 }}
+                    >
                       Votre demande a bien été transmise
                     </h2>
                     <p style={{ fontSize: 14, color: "#5F5E5A", lineHeight: 1.75 }}>
-                      Un professionnel immobilier actif dans votre secteur vous contactera afin d&apos;échanger sur votre bien et, si nécessaire, organiser une estimation gratuite et sans engagement.
+                      Un professionnel immobilier actif dans votre secteur vous contactera
+                      afin d&apos;échanger sur votre bien et, si nécessaire, organiser
+                      une estimation gratuite et sans engagement.
                     </p>
-                    <div style={{ marginTop: 24, padding: "14px 16px", background: "#F7F5F0", borderRadius: 12, fontSize: 13, color: "#888780" }}>
-                      Analyse de votre demande · Contact par un professionnel · Estimation sans engagement
+                    <div
+                      style={{
+                        marginTop: 24,
+                        padding: "14px 16px",
+                        background: "#F7F5F0",
+                        borderRadius: 12,
+                        fontSize: 13,
+                        color: "#888780",
+                      }}
+                    >
+                      Analyse de votre demande · Contact par un professionnel · Estimation
+                      sans engagement
                     </div>
                   </div>
                 ) : (
-                  <form action={SCRIPT_URL} method="POST" target="hidden_iframe" onSubmit={handleSubmit}>
+                  <form
+                    action={SCRIPT_URL}
+                    method="POST"
+                    target="hidden_iframe"
+                    onSubmit={handleSubmit}
+                    style={{ display: "flex", flexDirection: "column", flex: 1 }}
+                  >
                     <input type="hidden" name="codePostal" value={form.codePostal} readOnly />
                     <input type="hidden" name="projet" value={form.projet} readOnly />
                     <input type="hidden" name="delai" value={form.delai} readOnly />
@@ -387,9 +610,24 @@ export default function RealEstateLeadPage() {
                     <input type="hidden" name="telephone" value={form.telephone} readOnly />
                     <input type="hidden" name="email" value={form.email} readOnly />
 
-                    <div style={{ marginBottom: 28 }}>
-                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-                        <span style={{ fontSize: 12, fontWeight: 500, color: "#888780", textTransform: "uppercase", letterSpacing: "0.08em" }}>
+                    <div style={{ marginBottom: 18 }}>
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                          marginBottom: 12,
+                        }}
+                      >
+                        <span
+                          style={{
+                            fontSize: 12,
+                            fontWeight: 500,
+                            color: "#888780",
+                            textTransform: "uppercase",
+                            letterSpacing: "0.08em",
+                          }}
+                        >
                           Étape {step} sur 4
                         </span>
                         <span style={{ fontSize: 12, color: "#8B6A3E", fontWeight: 500 }}>
@@ -398,163 +636,282 @@ export default function RealEstateLeadPage() {
                       </div>
                       <div style={{ display: "flex", gap: 6 }}>
                         {STEPS.map((s) => (
-                          <div key={s.num} style={{
-                            flex: 1, height: 4, borderRadius: 4,
-                            background: s.num <= step ? "#8B6A3E" : "#E8E6E0",
-                            transition: "background 0.3s",
-                          }} />
+                          <div
+                            key={s.num}
+                            style={{
+                              flex: 1,
+                              height: 4,
+                              borderRadius: 4,
+                              background: s.num <= step ? "#8B6A3E" : "#E8E6E0",
+                              transition: "background 0.3s",
+                            }}
+                          />
                         ))}
                       </div>
                     </div>
 
-                    {step === 1 && (
-                      <div className="step-fade">
-                        <h2 className="serif" style={{ fontSize: 20, fontWeight: 700, marginBottom: 6 }}>Où se situe le bien à estimer ?</h2>
-                        <p style={{ fontSize: 13, color: "#888780", marginBottom: 24, lineHeight: 1.6 }}>
-                          Le code postal permet de transmettre votre demande à un professionnel actif dans votre secteur.
-                        </p>
-                        <div className="field">
-                          <label>Code postal du bien</label>
-                          <input
-                            type="text"
-                            inputMode="numeric"
-                            placeholder="Ex. 6230"
-                            value={form.codePostal}
-                            onChange={(e) => setField("codePostal", e.target.value)}
-                            autoComplete="postal-code"
-                          />
+                    <div className="form-body">
+                      {step === 1 && (
+                        <div className="step-fade">
+                          <h2 className="serif" style={{ fontSize: 20, fontWeight: 700, marginBottom: 6 }}>
+                            Où se situe le bien à estimer ?
+                          </h2>
+                          <p style={{ fontSize: 13, color: "#888780", marginBottom: 18, lineHeight: 1.6 }}>
+                            Le code postal permet de transmettre votre demande à un professionnel actif dans votre secteur.
+                          </p>
+                          <div className="field">
+                            <label>Code postal du bien</label>
+                            <input
+                              type="text"
+                              inputMode="numeric"
+                              pattern="[0-9]*"
+                              maxLength={6}
+                              placeholder="Ex. 6230"
+                              value={form.codePostal}
+                              onChange={(e) => setField("codePostal", e.target.value)}
+                              autoComplete="postal-code"
+                            />
+                          </div>
                         </div>
-                      </div>
-                    )}
+                      )}
 
-                    {step === 2 && (
-                      <div className="step-fade">
-                        <h2 className="serif" style={{ fontSize: 20, fontWeight: 700, marginBottom: 6 }}>Quel est votre projet ?</h2>
-                        <p style={{ fontSize: 13, color: "#888780", marginBottom: 24, lineHeight: 1.6 }}>
-                          Ces informations permettent de mieux comprendre votre besoin avant la prise de contact.
-                        </p>
-                        <div className="field">
-                          <label>Votre projet</label>
-                          <div style={{ display: "grid", gap: 8 }}>
-                            {["Je souhaite vendre mon bien", "Je prépare une vente dans les prochains mois", "Je souhaite connaître la valeur de mon bien", "Je me renseigne simplement"].map((project) => (
-                              <button key={project} type="button" className={`option-btn${form.projet === project ? " selected" : ""}`} onClick={() => setField("projet", project)}>
-                                {project}
-                              </button>
+                      {step === 2 && (
+                        <div className="step-fade">
+                          <h2 className="serif" style={{ fontSize: 20, fontWeight: 700, marginBottom: 6 }}>
+                            Quel est votre projet ?
+                          </h2>
+                          <p style={{ fontSize: 13, color: "#888780", marginBottom: 18, lineHeight: 1.6 }}>
+                            Ces informations permettent de mieux comprendre votre besoin avant la prise de contact.
+                          </p>
+                          <div className="field">
+                            <label>Votre projet</label>
+                            <div style={{ display: "grid", gap: 8 }}>
+                              {[
+                                "Je souhaite vendre mon bien",
+                                "Je prépare une vente dans les prochains mois",
+                                "Je souhaite connaître la valeur de mon bien",
+                                "Je me renseigne simplement",
+                              ].map((project) => (
+                                <button
+                                  key={project}
+                                  type="button"
+                                  className={`option-btn${form.projet === project ? " selected" : ""}`}
+                                  onClick={() => setField("projet", project)}
+                                >
+                                  {project}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                          <div className="field" style={{ marginTop: 14 }}>
+                            <label>Délai de vente envisagé</label>
+                            <div style={{ display: "grid", gap: 8 }}>
+                              {["Dès que possible", "Dans les 3 mois", "Dans les 6 mois", "Pas encore défini"].map(
+                                (delay) => (
+                                  <button
+                                    key={delay}
+                                    type="button"
+                                    className={`option-btn${form.delai === delay ? " selected" : ""}`}
+                                    onClick={() => setField("delai", delay)}
+                                  >
+                                    {delay}
+                                  </button>
+                                )
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {step === 3 && (
+                        <div className="step-fade">
+                          <h2 className="serif" style={{ fontSize: 20, fontWeight: 700, marginBottom: 6 }}>
+                            Quelques détails sur votre bien
+                          </h2>
+                          <p style={{ fontSize: 13, color: "#888780", marginBottom: 18, lineHeight: 1.6 }}>
+                            Ces éléments aident le professionnel à préparer son premier échange avec vous.
+                          </p>
+                          <div className="field">
+                            <label>Type de bien</label>
+                            <div className="opts-4" style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: 8 }}>
+                              {["Maison", "Appartement", "Studio", "Duplex", "Triplex", "Terrain", "Immeuble", "Autre"].map(
+                                (type) => (
+                                  <button
+                                    key={type}
+                                    type="button"
+                                    className={`option-btn${form.typeBien === type ? " selected" : ""}`}
+                                    onClick={() => setField("typeBien", type)}
+                                    style={{ textAlign: "center", padding: "11px 8px", fontSize: 13 }}
+                                  >
+                                    {type}
+                                  </button>
+                                )
+                              )}
+                            </div>
+                          </div>
+                          <div className="field" style={{ marginTop: 14 }}>
+                            <label>Nombre de chambres</label>
+                            <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                              {["0", "1", "2", "3", "4", "5+"].map((count) => (
+                                <button
+                                  key={count}
+                                  type="button"
+                                  className={`option-btn${form.chambres === count ? " selected" : ""}`}
+                                  onClick={() => setField("chambres", count)}
+                                  style={{
+                                    textAlign: "center",
+                                    flex: 1,
+                                    minWidth: 46,
+                                    padding: "11px 6px",
+                                    fontSize: 14,
+                                    fontWeight: 500,
+                                  }}
+                                >
+                                  {count}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                          <div className="field">
+                            <label>État général</label>
+                            <select value={form.etat} onChange={(e) => setField("etat", e.target.value)}>
+                              <option value="">Choisir</option>
+                              <option value="À rénover">À rénover</option>
+                              <option value="À rafraîchir">À rafraîchir</option>
+                              <option value="Bon état">Bon état</option>
+                              <option value="Excellent état">Excellent état</option>
+                            </select>
+                          </div>
+                        </div>
+                      )}
+
+                      {step === 4 && (
+                        <div className="step-fade">
+                          <h2 className="serif" style={{ fontSize: 20, fontWeight: 700, marginBottom: 6 }}>
+                            Où pouvons-nous vous recontacter ?
+                          </h2>
+                          <p style={{ fontSize: 13, color: "#888780", marginBottom: 18, lineHeight: 1.6 }}>
+                            Un professionnel immobilier actif dans votre secteur pourra vous contacter pour échanger sur votre bien et votre demande d’estimation.
+                          </p>
+                          <div className="field">
+                            <label>Prénom et nom</label>
+                            <input
+                              type="text"
+                              placeholder="Jean Dupont"
+                              value={form.nom}
+                              onChange={(e) => setField("nom", e.target.value)}
+                            />
+                          </div>
+                          <div className="grid-2">
+                            <div className="field">
+                              <label>Téléphone</label>
+                              <input
+                                type="tel"
+                                inputMode="tel"
+                                placeholder="0475 12 34 56"
+                                value={form.telephone}
+                                onChange={(e) => setField("telephone", e.target.value)}
+                              />
+                            </div>
+                            <div className="field">
+                              <label>E-mail</label>
+                              <input
+                                type="email"
+                                placeholder="jean@exemple.be"
+                                value={form.email}
+                                onChange={(e) => setField("email", e.target.value)}
+                              />
+                            </div>
+                          </div>
+                          <div className="grid-2">
+                            <div className="field">
+                              <label>Rue</label>
+                              <input
+                                type="text"
+                                placeholder="Rue de la Gare"
+                                value={form.rue}
+                                onChange={(e) => setField("rue", e.target.value)}
+                              />
+                            </div>
+                            <div className="field">
+                              <label>Numéro</label>
+                              <input
+                                type="text"
+                                placeholder="12"
+                                value={form.numero}
+                                onChange={(e) => setField("numero", e.target.value)}
+                              />
+                            </div>
+                          </div>
+                          <div className="field">
+                            <label>Ville / Commune</label>
+                            <input
+                              type="text"
+                              placeholder="Pont-à-Celles"
+                              value={form.ville}
+                              onChange={(e) => setField("ville", e.target.value)}
+                            />
+                          </div>
+                          <div className="field" style={{ marginTop: 12 }}>
+                            <label>
+                              Précisions supplémentaires{" "}
+                              <span style={{ fontWeight: 400, color: "#B4B2A9" }}>(facultatif)</span>
+                            </label>
+                            <textarea
+                              rows={3}
+                              placeholder="Jardin, garage, rénovations récentes..."
+                              value={form.message}
+                              onChange={(e) => setField("message", e.target.value)}
+                              style={{ resize: "vertical" }}
+                            />
+                          </div>
+
+                          <div
+                            style={{
+                              display: "flex",
+                              justifyContent: "center",
+                              gap: 20,
+                              padding: "12px 0",
+                              marginTop: 10,
+                              borderTop: "1px solid #F1EFE8",
+                              borderBottom: "1px solid #F1EFE8",
+                              flexWrap: "wrap",
+                            }}
+                          >
+                            {[
+                              "Réponse sous 48h",
+                              "Aucun engagement",
+                              "Professionnel de votre secteur",
+                            ].map((text) => (
+                              <span
+                                key={text}
+                                style={{
+                                  fontSize: 12,
+                                  color: "#888780",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: 5,
+                                }}
+                              >
+                                <span style={{ color: "#3B6D11", fontWeight: 700 }}>✓</span> {text}
+                              </span>
                             ))}
                           </div>
                         </div>
-                        <div className="field" style={{ marginTop: 16 }}>
-                          <label>Délai de vente envisagé</label>
-                          <div style={{ display: "grid", gap: 8 }}>
-                            {["Dès que possible", "Dans les 3 mois", "Dans les 6 mois", "Pas encore défini"].map((delay) => (
-                              <button key={delay} type="button" className={`option-btn${form.delai === delay ? " selected" : ""}`} onClick={() => setField("delai", delay)}>
-                                {delay}
-                              </button>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-                    )}
+                      )}
 
-                    {step === 3 && (
-                      <div className="step-fade">
-                        <h2 className="serif" style={{ fontSize: 20, fontWeight: 700, marginBottom: 6 }}>Quelques détails sur votre bien</h2>
-                        <p style={{ fontSize: 13, color: "#888780", marginBottom: 24, lineHeight: 1.6 }}>
-                          Ces éléments aident le professionnel à préparer son premier échange avec vous.
+                      {submitError && (
+                        <p style={{ marginTop: 12, fontSize: 12, color: "#B3261E", textAlign: "center" }}>
+                          {submitError}
                         </p>
-                        <div className="field">
-                          <label>Type de bien</label>
-                          <div className="opts-4" style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: 8 }}>
-                            {["Maison", "Appartement", "Studio", "Duplex", "Triplex", "Terrain", "Immeuble", "Autre"].map((type) => (
-                              <button key={type} type="button" className={`option-btn${form.typeBien === type ? " selected" : ""}`} onClick={() => setField("typeBien", type)} style={{ textAlign: "center", padding: "11px 8px", fontSize: 13 }}>
-                                {type}
-                              </button>
-                            ))}
-                          </div>
-                        </div>
-                        <div className="field" style={{ marginTop: 16 }}>
-                          <label>Nombre de chambres</label>
-                          <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                            {["0", "1", "2", "3", "4", "5+"].map((count) => (
-                              <button key={count} type="button" className={`option-btn${form.chambres === count ? " selected" : ""}`} onClick={() => setField("chambres", count)} style={{ textAlign: "center", flex: 1, minWidth: 46, padding: "11px 6px", fontSize: 14, fontWeight: 500 }}>
-                                {count}
-                              </button>
-                            ))}
-                          </div>
-                        </div>
-                        <div className="field">
-                          <label>État général</label>
-                          <select value={form.etat} onChange={(e) => setField("etat", e.target.value)}>
-                            <option value="">Choisir</option>
-                            <option value="À rénover">À rénover</option>
-                            <option value="À rafraîchir">À rafraîchir</option>
-                            <option value="Bon état">Bon état</option>
-                            <option value="Excellent état">Excellent état</option>
-                          </select>
-                        </div>
-                      </div>
-                    )}
+                      )}
 
-                    {step === 4 && (
-                      <div className="step-fade">
-                        <h2 className="serif" style={{ fontSize: 20, fontWeight: 700, marginBottom: 6 }}>Où pouvons-nous vous recontacter ?</h2>
-                        <p style={{ fontSize: 13, color: "#888780", marginBottom: 24, lineHeight: 1.6 }}>
-                          Un professionnel immobilier actif dans votre secteur pourra vous contacter pour échanger sur votre bien et votre demande d’estimation.
-                        </p>
-                        <div className="field">
-                          <label>Prénom et nom</label>
-                          <input type="text" placeholder="Jean Dupont" value={form.nom} onChange={(e) => setField("nom", e.target.value)} />
-                        </div>
-                        <div className="grid-2">
-                          <div className="field">
-                            <label>Téléphone</label>
-                            <input type="tel" inputMode="tel" placeholder="0475 12 34 56" value={form.telephone} onChange={(e) => setField("telephone", e.target.value)} />
-                          </div>
-                          <div className="field">
-                            <label>E-mail</label>
-                            <input type="email" placeholder="jean@exemple.be" value={form.email} onChange={(e) => setField("email", e.target.value)} />
-                          </div>
-                        </div>
-                        <div className="grid-2">
-                          <div className="field">
-                            <label>Rue</label>
-                            <input type="text" placeholder="Rue de la Gare" value={form.rue} onChange={(e) => setField("rue", e.target.value)} />
-                          </div>
-                          <div className="field">
-                            <label>Numéro</label>
-                            <input type="text" placeholder="12" value={form.numero} onChange={(e) => setField("numero", e.target.value)} />
-                          </div>
-                        </div>
-                        <div className="field">
-                          <label>Ville / Commune</label>
-                          <input type="text" placeholder="Pont-à-Celles" value={form.ville} onChange={(e) => setField("ville", e.target.value)} />
-                        </div>
-                        <div className="field" style={{ marginTop: 16 }}>
-                          <label>
-                            Précisions supplémentaires <span style={{ fontWeight: 400, color: "#B4B2A9" }}>(facultatif)</span>
-                          </label>
-                          <textarea rows={3} placeholder="Jardin, garage, rénovations récentes..." value={form.message} onChange={(e) => setField("message", e.target.value)} style={{ resize: "vertical" }} />
-                        </div>
-                        <div style={{
-                          display: "flex", justifyContent: "center", gap: 20,
-                          padding: "12px 0", marginBottom: 16,
-                          borderTop: "1px solid #F1EFE8", borderBottom: "1px solid #F1EFE8",
-                          flexWrap: "wrap",
-                        }}>
-                          {["Réponse sous 48h", "Aucun engagement", "Professionnel de votre secteur"].map((text) => (
-                            <span key={text} style={{ fontSize: 12, color: "#888780", display: "flex", alignItems: "center", gap: 5 }}>
-                              <span style={{ color: "#3B6D11", fontWeight: 700 }}>✓</span> {text}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                    )}
+                      <p style={{ marginTop: 12, fontSize: 11, color: "#B4B2A9", lineHeight: 1.6, textAlign: "center" }}>
+                        En cliquant sur « Obtenir mon estimation gratuite », vous acceptez la politique de confidentialité de EstimationGratuite.be et le traitement de vos données afin d&apos;être contacté par un professionnel immobilier actif dans votre secteur dans le cadre de votre demande d&apos;estimation.
+                      </p>
+                    </div>
 
-                 <div style={{
-  display: "flex",
-  gap: 10,
-  marginTop: "auto"
-}}>
+                    <div className="form-actions">
                       {step > 1 && (
                         <button type="button" className="btn-back" onClick={goBack} style={{ flex: "0 0 auto" }}>
                           ← Retour
@@ -570,16 +927,6 @@ export default function RealEstateLeadPage() {
                         </button>
                       )}
                     </div>
-
-                    {submitError && (
-                      <p style={{ marginTop: 12, fontSize: 12, color: "#B3261E", textAlign: "center" }}>
-                        {submitError}
-                      </p>
-                    )}
-
-                    <p style={{ marginTop: 14, fontSize: 11, color: "#B4B2A9", lineHeight: 1.6, textAlign: "center" }}>
-                      En cliquant sur « Obtenir mon estimation gratuite », vous acceptez la politique de confidentialité de EstimationGratuite.be et le traitement de vos données afin d&apos;être contacté par un professionnel immobilier actif dans votre secteur dans le cadre de votre demande d&apos;estimation.
-                    </p>
                   </form>
                 )}
               </div>
@@ -648,26 +995,53 @@ export default function RealEstateLeadPage() {
                   { n: "2", t: "Votre demande est analysée", link: false },
                   { n: "3", t: "Un professionnel vous contacte", link: false },
                 ].map((item) => (
-                  <div key={item.n} className="step-card" style={{
-                    display: "flex", alignItems: "center", gap: 16,
-                    background: "rgba(255,255,255,0.05)",
-                    border: "1px solid rgba(255,255,255,0.08)",
-                    borderRadius: 14, padding: "18px 22px",
-                  }}>
-                    <div style={{
-                      width: 34, height: 34, borderRadius: "50%",
-                      background: "#8B6A3E", color: "#fff",
-                      display: "flex", alignItems: "center", justifyContent: "center",
-                      fontSize: 14, fontWeight: 500, flexShrink: 0,
-                    }}>{item.n}</div>
+                  <div
+                    key={item.n}
+                    className="step-card"
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 16,
+                      background: "rgba(255,255,255,0.05)",
+                      border: "1px solid rgba(255,255,255,0.08)",
+                      borderRadius: 14,
+                      padding: "18px 22px",
+                    }}
+                  >
+                    <div
+                      style={{
+                        width: 34,
+                        height: 34,
+                        borderRadius: "50%",
+                        background: "#8B6A3E",
+                        color: "#fff",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        fontSize: 14,
+                        fontWeight: 500,
+                        flexShrink: 0,
+                      }}
+                    >
+                      {item.n}
+                    </div>
                     <span style={{ fontSize: 15, fontWeight: 500 }}>{item.t}</span>
                     {item.link && (
-                      <a className="step-link" href="#formulaire" style={{
-                        marginLeft: "auto", padding: "7px 14px",
-                        background: "#fff", color: "#1a1a18",
-                        borderRadius: 8, fontSize: 13, fontWeight: 500,
-                        textDecoration: "none", whiteSpace: "nowrap",
-                      }}>
+                      <a
+                        className="step-link"
+                        href="#formulaire"
+                        style={{
+                          marginLeft: "auto",
+                          padding: "7px 14px",
+                          background: "#fff",
+                          color: "#1a1a18",
+                          borderRadius: 8,
+                          fontSize: 13,
+                          fontWeight: 500,
+                          textDecoration: "none",
+                          whiteSpace: "nowrap",
+                        }}
+                      >
                         Commencer
                       </a>
                     )}
@@ -680,7 +1054,7 @@ export default function RealEstateLeadPage() {
       </section>
 
       <section className="section-pad" style={{ maxWidth: 1200, margin: "0 auto", padding: "80px 32px" }}>
-        <div style={{ background: "#F1EFE8", borderRadius: 28, overflow: "hidden", display: "grid", gridTemplateColumns: "1fr 1fr" }} className="cta-layout">
+        <div className="cta-layout" style={{ background: "#F1EFE8", borderRadius: 28, overflow: "hidden", display: "grid", gridTemplateColumns: "1fr 1fr" }}>
           <div className="cta-box" style={{ padding: "56px 48px" }}>
             <p style={{ fontSize: 12, fontWeight: 500, textTransform: "uppercase", letterSpacing: "0.12em", color: "#888780", marginBottom: 14 }}>
               Vous envisagez de vendre votre bien ?
@@ -691,33 +1065,49 @@ export default function RealEstateLeadPage() {
             <p style={{ fontSize: 15, lineHeight: 1.8, color: "#5F5E5A", fontWeight: 300, marginBottom: 32 }}>
               Dans un marché immobilier belge de plus en plus exigeant, préparer correctement sa vente est essentiel. Une estimation avec un professionnel actif dans votre secteur permet d&apos;avancer sur des bases solides.
             </p>
-            <a href="#formulaire" style={{
-              display: "inline-flex", padding: "16px 32px",
-              background: "#1a1a18", color: "#fff",
-              borderRadius: 12, fontSize: 15, fontWeight: 500,
-              textDecoration: "none", whiteSpace: "nowrap",
-            }}>
+            <a
+              href="#formulaire"
+              style={{
+                display: "inline-flex",
+                padding: "16px 32px",
+                background: "#1a1a18",
+                color: "#fff",
+                borderRadius: 12,
+                fontSize: 15,
+                fontWeight: 500,
+                textDecoration: "none",
+                whiteSpace: "nowrap",
+              }}
+            >
               Je demande mon estimation gratuite
             </a>
           </div>
-          <div style={{
-            backgroundImage: "url('https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=800&auto=format&fit=crop&q=80')",
-            backgroundSize: "cover", backgroundPosition: "center",
-            minHeight: 320,
-          }} />
+          <div
+            style={{
+              backgroundImage:
+                "url('https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=800&auto=format&fit=crop&q=80')",
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+              minHeight: 320,
+            }}
+          />
         </div>
       </section>
 
       <footer style={{ borderTop: "1px solid #E8E6E0", background: "#fff", padding: "32px", textAlign: "center" }}>
         <div style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 10, marginBottom: 8 }}>
-          <img src={LOGO_ICON_URL} alt="EstimationGratuite.be" style={{ width: 46, height: 46, objectFit: "contain", borderRadius: 8 }} />
+          <img
+            src={LOGO_ICON_URL}
+            alt="EstimationGratuite.be"
+            style={{ width: 46, height: 46, objectFit: "contain", borderRadius: 8 }}
+          />
           <span className="serif" style={{ fontSize: 18, fontWeight: 700 }}>
-            <span style={{ color: "#1a1a18" }}>Estimation</span><span style={{ color: "#8B6A3E" }}>Gratuite</span><span style={{ color: "#1a1a18" }}>.be</span>
+            <span style={{ color: "#1a1a18" }}>Estimation</span>
+            <span style={{ color: "#8B6A3E" }}>Gratuite</span>
+            <span style={{ color: "#1a1a18" }}>.be</span>
           </span>
         </div>
-        <p style={{ fontSize: 12, color: "#888780" }}>
-          L’estimation immobilière avec un regard humain
-        </p>
+        <p style={{ fontSize: 12, color: "#888780" }}>L’estimation immobilière avec un regard humain</p>
       </footer>
 
       <div className="mobile-cta">
