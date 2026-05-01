@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 type Step = 1 | 2 | 3 | 4;
 
@@ -53,6 +53,7 @@ export default function RealEstateLeadPage() {
   const [submitError, setSubmitError] = useState("");
   const [form, setForm] = useState<FormState>(INITIAL_FORM);
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
+  const formTopRef = useRef<HTMLDivElement | null>(null);
 
   const setField = (key: keyof FormState, value: string) => {
     setForm((prev) => ({ ...prev, [key]: value }));
@@ -94,6 +95,21 @@ export default function RealEstateLeadPage() {
     setIsSubmitting(false);
     setSubmitted(true);
   };
+
+  // UX: quand on change d’étape, remonter automatiquement en haut du formulaire
+  // (sinon l’utilisateur reste « en bas » après avoir scrollé pour cliquer sur Continuer)
+  useEffect(() => {
+    if (submitted) return;
+    const el = formTopRef.current;
+    if (!el) return;
+
+    // Attendre le rendu de l’étape avant de scroller
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        el.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+    });
+  }, [step, submitted]);
 
   return (
     <div
@@ -254,11 +270,20 @@ export default function RealEstateLeadPage() {
           min-height: 360px; /* évite les sauts entre étapes */
           display: flex;
           flex-direction: column;
+          padding-bottom: 8px; /* desktop */
         }
+
+        .form-top-anchor { scroll-margin-top: 96px; }
         .form-actions {
           display: flex;
           gap: 10px;
           margin-top: 18px;
+
+          /* Mobile UX: boutons toujours accessibles */
+          position: sticky;
+          bottom: 0;
+          padding: 12px 0 calc(12px + env(safe-area-inset-bottom));
+          background: linear-gradient(to top, #fff 80%, rgba(255,255,255,0));
         }
 
         .step-fade { animation: stepIn 0.22s ease both; }
@@ -308,7 +333,7 @@ export default function RealEstateLeadPage() {
             .form-card { min-height: 70svh !important; }
           }
 
-          .form-body { min-height: 420px; }
+          .form-body { min-height: 420px; padding-bottom: 84px; }
           .section-pad  { padding: 56px 16px !important; }
           .cta-box      { padding: 36px 20px !important; }
           .step-card    { flex-direction: column !important; align-items: flex-start !important; }
@@ -609,6 +634,8 @@ export default function RealEstateLeadPage() {
                     <input type="hidden" name="nom" value={form.nom} readOnly />
                     <input type="hidden" name="telephone" value={form.telephone} readOnly />
                     <input type="hidden" name="email" value={form.email} readOnly />
+
+                    <div ref={formTopRef} className="form-top-anchor" />
 
                     <div style={{ marginBottom: 18 }}>
                       <div
