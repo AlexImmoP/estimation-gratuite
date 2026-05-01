@@ -108,6 +108,11 @@ export default function RealEstateLeadPage() {
           border-radius: 8px;
           flex-shrink: 0;
         }
+        .nav-button {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+        }
 
         input, select, textarea {
           width: 100%;
@@ -236,10 +241,10 @@ export default function RealEstateLeadPage() {
           .span-2       { grid-column: span 1 !important; }
           .opts-4       { grid-template-columns: 1fr 1fr !important; }
           .mobile-cta   { display: block; }
-          .nav-wrap     { padding: 12px 16px !important; gap: 12px; }
+          .nav-wrap     { padding: 12px 16px !important; gap: 12px; flex-direction: column !important; align-items: flex-start !important; }
           .nav-brand    { font-size: 16px !important; }
           .brand-icon   { width: 42px !important; height: 42px !important; }
-          .nav-button   { padding: 8px 12px !important; font-size: 12px !important; }
+          .nav-button   { padding: 10px 12px !important; font-size: 12px !important; width: 100% !important; }
           .hero-section { overflow: hidden !important; }
           .hero-image   { display: none !important; }
           .hero-pad     { padding: 40px 16px !important; }
@@ -257,7 +262,7 @@ export default function RealEstateLeadPage() {
         background: "#fff", borderBottom: "1px solid #E8E6E0",
         padding: "14px 32px",
         display: "flex", alignItems: "center", justifyContent: "space-between",
-        boxShadow: "0 2px 16px rgba(0,0,0,0.06)", gap: 20,
+        boxShadow: "0 2px 16px rgba(0,0,0,0.06)", gap: 20, flexWrap: "wrap",
       }}>
         <a href="#" className="brand-link">
           <img src={LOGO_ICON_URL} alt="EstimationGratuite.be" className="brand-icon" />
