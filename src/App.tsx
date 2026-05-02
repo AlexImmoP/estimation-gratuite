@@ -1,3 +1,5 @@
+import { useEffect, useRef, useState } from "react";
+
 type Step = 1 | 2 | 3 | 4;
 
 type FormState = {
@@ -152,7 +154,11 @@ export default function RealEstateLeadPage() {
         .field label { display: block; font-size: 12px; font-weight: 500; color: #888780; margin-bottom: 6px; letter-spacing: 0.03em; text-transform: uppercase; }
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .btn-primary { width: 100%; padding: 15px 24px; background: #1a1a18; color: #fff; border: none; border-radius: 12px; font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 500; cursor: pointer; transition: background 0.2s, transform 0.15s, opacity 0.2s; min-height: 52px; }
-        @media (max-width: 900px) { .btn-primary { min-height: 56px; font-size: 15px; } .btn-submit { font-size: 14px; } }
+        .btn-primary:hover:not(:disabled) { background: #333330; transform: translateY(-1px); }
+        .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+        .btn-continue { background: #8B6A3E !important; }
+        .btn-continue:hover:not(:disabled) { background: #7A5C34 !important; }
+        @media (max-width: 900px) { .btn-primary { min-height: 60px; font-size: 15px; } .btn-submit { font-size: 14px; } }
         .btn-primary:hover:not(:disabled) { background: #333330; transform: translateY(-1px); }
         .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
         .btn-back { background: none; border: 1.5px solid #D6D4CE; border-radius: 12px; padding: 13px 20px; font-family: 'DM Sans', sans-serif; font-size: 14px; color: #888780; cursor: pointer; transition: border-color 0.2s, color 0.2s; }
@@ -435,7 +441,7 @@ export default function RealEstateLeadPage() {
                     <div className="form-actions">
                       {step > 1 && <button type="button" className="btn-back" onClick={goBack} style={{ flex: "0 0 auto" }}>← Retour</button>}
                       {step < 4 ? (
-                        <button type="button" className="btn-primary" disabled={!canNext()} onClick={goNext}>Continuer →</button>
+                        <button type="button" className="btn-primary btn-continue" disabled={!canNext()} onClick={goNext}>Continuer →</button>
                       ) : (
                         <button type="submit" className="btn-primary btn-submit" disabled={!canNext() || isSubmitting}>{isSubmitting ? "Envoi en cours..." : "Obtenir mon estimation gratuite →"}</button>
                       )}
