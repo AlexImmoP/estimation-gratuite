@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 
+/* === TYPES === */
 type Step = 1 | 2 | 3 | 4;
 
 type FormState = {
@@ -18,6 +19,7 @@ type FormState = {
   email: string;
 };
 
+/* === CONFIG === */
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxhdY9p_l8F1i-XMqZs93_wWZnazlOkEKygFZXB-Ke33kqkZWcHwQ16ObfWFrOfgjCE/exec";
 
 const INITIAL_FORM: FormState = {
@@ -60,6 +62,7 @@ export default function RealEstateLeadPage() {
   const goNext = () => canNext() && setStep((s) => (s + 1) as Step);
   const goBack = () => setStep((s) => (s - 1) as Step);
 
+  /* ✅ FIX BUG SUBMIT */
   const handleSubmit = (e: any) => {
     if (step !== 4) {
       e.preventDefault();
@@ -86,18 +89,29 @@ export default function RealEstateLeadPage() {
 
   return (
     <div style={{ fontFamily: "sans-serif", padding: 20 }}>
-
       <div style={{ maxWidth: 400, margin: "auto" }}>
 
-        <iframe ref={iframeRef} name="hidden_iframe" style={{ display: "none" }} onLoad={handleIframeLoad} />
+        <iframe
+          ref={iframeRef}
+          name="hidden_iframe"
+          style={{ display: "none" }}
+          onLoad={handleIframeLoad}
+        />
 
         {submitted ? (
-          <div>✅ Merci, on vous contacte</div>
+          <div>✅ Votre demande a bien été envoyée</div>
         ) : (
-          <form action={SCRIPT_URL} method="POST" target="hidden_iframe" onSubmit={handleSubmit} noValidate>
+          <form
+            action={SCRIPT_URL}
+            method="POST"
+            target="hidden_iframe"
+            onSubmit={handleSubmit}
+            noValidate
+          >
 
             <div ref={formTopRef} />
 
+            {/* STEP 1 */}
             {step === 1 && (
               <>
                 <h2>Code postal</h2>
@@ -108,47 +122,54 @@ export default function RealEstateLeadPage() {
               </>
             )}
 
+            {/* STEP 2 */}
             {step === 2 && (
               <>
-                <h2>Projet</h2>
+                <h2>Votre projet</h2>
 
-                {/* SUPPRESSION “je me renseigne simplement” */}
-                <button type="button" onClick={() => setField("projet", "vente")}>
-                  Je souhaite vendre
-                </button>
+                {/* ❌ supprimé "je me renseigne simplement" */}
+                {[
+                  "Je souhaite vendre mon bien",
+                  "Je prépare une vente dans les prochains mois",
+                  "Je souhaite connaître la valeur de mon bien",
+                ].map((project) => (
+                  <button
+                    key={project}
+                    type="button"
+                    onClick={() => setField("projet", project)}
+                  >
+                    {project}
+                  </button>
+                ))}
 
-                <button type="button" onClick={() => setField("projet", "preparation")}>
-                  Je prépare une vente
-                </button>
-
-                {/* affiché seulement après choix */}
+                {/* ✅ délai affiché après choix */}
                 {form.projet && (
                   <>
                     <h3>Délai</h3>
 
-                    <button type="button" onClick={() => setField("delai", "rapide")}>
-                      Dès que possible
-                    </button>
-
-                    <button type="button" onClick={() => setField("delai", "3 mois")}>
-                      3 mois
-                    </button>
-
-                    <button type="button" onClick={() => setField("delai", "6 mois")}>
-                      6 mois
-                    </button>
-
-                    <button type="button" onClick={() => setField("delai", "plus")}>
-                      +6 mois
-                    </button>
+                    {[
+                      "Dès que possible",
+                      "Dans les 3 mois",
+                      "Dans les 6 mois",
+                      "Plus de 6 mois",
+                    ].map((delay) => (
+                      <button
+                        key={delay}
+                        type="button"
+                        onClick={() => setField("delai", delay)}
+                      >
+                        {delay}
+                      </button>
+                    ))}
                   </>
                 )}
               </>
             )}
 
+            {/* STEP 3 */}
             {step === 3 && (
               <>
-                <h2>Bien</h2>
+                <h2>Votre bien</h2>
 
                 <button type="button" onClick={() => setField("typeBien", "Maison")}>
                   Maison
@@ -160,27 +181,47 @@ export default function RealEstateLeadPage() {
 
                 <select onChange={(e) => setField("etat", e.target.value)}>
                   <option value="">Etat</option>
-                  <option>Bon</option>
+                  <option>Bon état</option>
                 </select>
               </>
             )}
 
+            {/* STEP 4 */}
             {step === 4 && (
               <>
-                <h2>Coordonnées</h2>
+                <h2>Vos coordonnées</h2>
 
-                <input autoComplete="name" placeholder="Nom" onChange={(e) => setField("nom", e.target.value)} />
-                <input autoComplete="tel" placeholder="Téléphone" onChange={(e) => setField("telephone", e.target.value)} />
-                <input autoComplete="email" placeholder="Email" onChange={(e) => setField("email", e.target.value)} />
+                <input
+                  autoComplete="name"
+                  placeholder="Nom"
+                  onChange={(e) => setField("nom", e.target.value)}
+                />
+
+                <input
+                  autoComplete="tel"
+                  placeholder="Téléphone"
+                  onChange={(e) => setField("telephone", e.target.value)}
+                />
+
+                <input
+                  autoComplete="email"
+                  placeholder="Email"
+                  onChange={(e) => setField("email", e.target.value)}
+                />
               </>
             )}
 
+            {/* NAVIGATION */}
             <div style={{ marginTop: 20 }}>
-              {step > 1 && <button type="button" onClick={goBack}>Retour</button>}
+              {step > 1 && (
+                <button type="button" onClick={goBack}>
+                  ← Retour
+                </button>
+              )}
 
               {step < 4 ? (
                 <button type="button" onClick={goNext} disabled={!canNext()}>
-                  Continuer
+                  Continuer →
                 </button>
               ) : (
                 <button type="submit">
@@ -188,7 +229,6 @@ export default function RealEstateLeadPage() {
                 </button>
               )}
             </div>
-
           </form>
         )}
       </div>
